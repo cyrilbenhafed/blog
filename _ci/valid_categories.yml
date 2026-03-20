@@ -1,0 +1,14 @@
+# _ci/valid_categories.yml
+# Liste des catégories autorisées pour les articles et projets
+# Pour ajouter une catégorie : ajouter une ligne ci-dessous et commiter sur dev
+
+categories:
+  - mlops
+  - llm
+  - ml
+  - nlp
+  - spark
+  - python
+  - analytics
+  - data-engineering
+  - visualizations

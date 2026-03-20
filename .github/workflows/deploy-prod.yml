@@ -1,0 +1,62 @@
+name: Deploy — Prod (main)
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "4.3"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install R dependencies
+        run: |
+          install.packages(c("rmarkdown", "knitr"))
+        shell: Rscript {0}
+
+      - name: Install Python dependencies
+        run: |
+          pip install jupyter nbformat
+
+      # ── CI checks — bloquants en prod ──────────────────────────
+
+      - name: Check YAML metadata (catégories, date, titre)
+        run: python _ci/check_metadata.py
+
+      - name: Spell check (Vale — FR)
+        uses: errata-ai/vale-action@reviewdog
+        with:
+          files: "."
+          vale_flags: "--config=.vale.ini"
+        # Pas de continue-on-error ici → bloquant en prod
+
+      # ── Build & Deploy ─────────────────────────────────────────
+
+      - name: Build Quarto site
+        run: quarto render
+
+      - name: Deploy to GitHub Pages (prod)
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          cname: blog.benhafed.com   # sous-domaine prod
+          commit_message: "prod: ${{ github.sha }}"

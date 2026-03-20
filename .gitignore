@@ -1,0 +1,30 @@
+# Quarto output
+_site/
+_freeze/
+.quarto/
+
+# Cache
+*_cache/
+*.~lock*
+
+# macOS
+.DS_Store
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+
+# Python
+__pycache__/
+*.pyc
+.env
+
+# Editors
+.vscode/
+*.swp
+
+# Jupyter
+.ipynb_checkpoints/
+
+/.quarto/

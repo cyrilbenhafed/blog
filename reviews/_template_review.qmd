@@ -1,0 +1,37 @@
+---
+title: "[TITRE DU LIVRE]"
+date: YYYY-MM-DD
+author: "Cyril Benhafed"
+categories: []              # catégorie(s) parmi la liste valide
+description: "[UNE PHRASE SUR LE LIVRE]"
+image: "cover.jpg"          # couverture du livre
+draft: true
+---
+
+<!-- Template book review — à supprimer avant publication -->
+
+**Auteur :** [Auteur]  
+**Année :** [Année]  
+**Lu en :** [Mois YYYY]  
+
+---
+
+## En une phrase
+
+[Ce que ce livre apporte, en une phrase directe]
+
+## Ce qui m'a marqué
+
+[À rédiger — 2 à 4 points, pas une liste exhaustive]
+
+## Une citation
+
+> [Citation choisie]
+
+## Pour qui ?
+
+[À rédiger — à qui recommander ce livre, dans quel contexte]
+
+## Mon verdict
+
+[À rédiger — libre, honnête, pas une note sur 5]

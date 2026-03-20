@@ -1,0 +1,35 @@
+---
+title: "[TITRE À ÉCRIRE]"
+date: YYYY-MM-DD
+author: "Cyril Benhafed"
+categories: [mlops]         # catégorie(s) parmi : mlops, llm, ml, nlp, spark, python, analytics, data-engineering, visualizations
+description: "[UNE PHRASE DE DESCRIPTION]"
+image: "cover.png"          # image IA — 1200×630px, style cohérent avec les autres articles
+draft: true
+---
+
+<!-- 
+  L'image de couverture (cover.png) est générée par IA.
+  Convention : fond sobre + élément graphique abstrait lié au sujet.
+  Modèle et style prompt à garder cohérents entre les articles.
+-->
+
+## Contexte
+
+[À rédiger]
+
+## Approche
+
+[À rédiger]
+
+```python
+# code ici
+```
+
+## Résultats
+
+[À rédiger]
+
+## Ce que j'en retiens
+
+[À rédiger]

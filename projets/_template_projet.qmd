@@ -1,0 +1,40 @@
+---
+title: "[NOM DU PROJET]"
+date: YYYY-MM-DD
+author: "Cyril Benhafed"
+categories: []              # catégorie(s) parmi la liste valide
+description: "[UNE PHRASE DE DESCRIPTION]"
+image: "cover.png"          # optionnel
+draft: true
+---
+
+<!-- Template projet — champs fixes, contenu libre -->
+
+## Contexte & problème
+
+[À rédiger — d'où vient ce projet, quel problème résout-il]
+
+## Périmètre
+
+| Élément | Détail |
+|---------|--------|
+| **Objectif** | |
+| **Données** | |
+| **Contraintes** | |
+| **Résultat attendu** | |
+
+## Architecture & choix techniques
+
+[À rédiger — schéma si pertinent, justification des choix]
+
+## Implémentation
+
+[À rédiger — extraits de code, outputs clés]
+
+## Résultats & impact
+
+[À rédiger — métriques, impact business si communicable]
+
+## Ce que j'ai appris
+
+[À rédiger — honnête, y compris les erreurs]

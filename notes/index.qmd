@@ -1,0 +1,15 @@
+---
+title: "Notes"
+description: "Fragments du quotidien — découvertes, observations de terrain, lectures, réflexions."
+listing:
+  contents: "*.qmd"
+  sort: "date desc"
+  type: grid
+  grid-columns: 2
+  fields: [date, title, categories]
+  categories: true
+  sort-ui: false
+  filter-ui: false
+page-layout: full
+title-block-banner: false
+---

@@ -1,0 +1,10 @@
+---
+title: "[TITRE COURT — une phrase qui donne envie de lire]"
+date: YYYY-MM-DD
+categories: [découverte]    # un seul tag : now, découverte, terrain, lecture, réflexion
+draft: true
+---
+
+<!-- 3 à 15 lignes. Si ça déborde → c'est un article. -->
+
+[À rédiger]

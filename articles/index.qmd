@@ -1,0 +1,16 @@
+---
+title: "Articles"
+description: "Retours d'expérience, explorations techniques et mise en production — data science, MLOps, LLM."
+listing:
+  contents: "*.qmd"
+  sort: "date desc"
+  type: grid
+  grid-columns: 2
+  fields: [image, date, title, description, categories, reading-time]
+  categories: true
+  sort-ui: false
+  filter-ui: false
+  feed: true
+page-layout: full
+title-block-banner: false
+---

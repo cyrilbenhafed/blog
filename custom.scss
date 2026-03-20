@@ -1,0 +1,28 @@
+/*-- scss:defaults --*/
+
+$primary:                    #667eea;
+$body-bg:                    #f7f9fc;
+$body-color:                 #1a202c;
+$secondary:                  #4a5568;
+$font-family-base:           'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+$headings-font-family:       'Source Serif 4', Georgia, serif;
+$font-size-base:             1rem;
+$line-height-base:           1.7;
+$border-color:               #cbd5e0;
+$link-color:                 #667eea;
+$link-hover-color:           #4a6cf7;
+$code-color:                 #667eea;
+
+$navbar-bg:                  #2d3748;
+$navbar-dark-color:          rgba(255, 255, 255, 0.70);
+$navbar-dark-hover-color:    #ffffff;
+$navbar-dark-active-color:   #ffffff;
+$navbar-dark-brand-color:    #ffffff;
+
+/*-- scss:rules --*/
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}

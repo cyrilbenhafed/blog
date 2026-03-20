@@ -1,0 +1,69 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Cyril Benhafed"
+  description: "ML Engineer — Articles, projets et notes sur la data en production."
+  site-url: https://blog.benhafed.com
+  favicon: assets/favicon.ico
+
+  navbar:
+    left:
+      - text: "Articles"
+        href: articles/index.qmd
+      - text: "Projets"
+        href: projets/index.qmd
+      - text: "Reviews"
+        href: reviews/index.qmd
+      - text: "Notes"
+        href: notes/index.qmd
+    right:
+      - icon: house
+        href: https://benhafed.com
+        aria-label: "Retour au site principal"
+        target: _blank
+      - icon: rss
+        href: articles/index.xml
+        aria-label: "Flux RSS"
+      - icon: linkedin
+        href: https://www.linkedin.com/in/cyril-benhafed/
+        aria-label: "LinkedIn"
+        target: _blank
+      - icon: github
+        href: https://github.com/cyrilbenhafed
+        aria-label: "GitHub"
+        target: _blank
+
+  page-footer:
+    left: "© 2026 Cyril Benhafed"
+    right:
+      - text: "benhafed.com"
+        href: https://benhafed.com
+
+  open-graph: true
+
+format:
+  html:
+    theme:
+      - flatly
+      - custom.scss
+    highlight-style: github
+    code-block-bg: true
+    code-copy: true
+    toc: true
+    toc-depth: 3
+    toc-title: "Sommaire"
+    number-sections: false
+    smooth-scroll: true
+    link-external-newwindow: true
+    link-external-icon: false
+
+lang: fr
+author: "Cyril Benhafed"
+
+execute:
+  freeze: auto
+  cache: true
+  warning: false
+  message: false

@@ -1,0 +1,33 @@
+---
+title: ""
+page-layout: full
+title-block-banner: false
+title-block-style: none
+toc: false
+---
+
+::: {.hero}
+
+## Carnets d'un ingénieur data {.hero-title}
+
+Ce blog sans prétention rassemble mes différents projets, découvertes et réflexions dans mon métier (et ma passion) autour de la data et du Machine Learning. 
+
+:::
+
+---
+
+::: {.nav-sections}
+
+### [Articles](articles/index.qmd)
+Retours d'expérience, explorations techniques, outils.
+
+### [Projets](projets/index.qmd)
+Projets détaillés — scope, architecture, résultats.
+
+### [Reviews](reviews/index.qmd)
+Retours sur des livres, cours et ressources diverses.
+
+### [Notes](notes/index.qmd)
+Mes découvertes, observations, réflexions, au jour le jour.
+
+:::

@@ -15,16 +15,26 @@ _freeze/
 .RData
 .Rproj.user/
 
-# Python
+# Python — venv
+.venv/
+venv/
+env/
+ENV/
+.env
+*.egg-info/
+dist/
+build/
+
+# Python — cache
 __pycache__/
 *.pyc
-.env
-
-# Editors
-.vscode/
-*.swp
+*.pyo
+*.pyd
 
 # Jupyter
 .ipynb_checkpoints/
 
-/.quarto/
+# Editors
+.vscode/
+*.swp
+*.swo

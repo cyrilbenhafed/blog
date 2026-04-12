@@ -5,7 +5,6 @@ author: "Cyril Benhafed"
 categories: [mlops]         # catégorie(s) parmi : mlops, llm, ml, nlp, spark, python, analytics, data-engineering, visualizations
 description: "[UNE PHRASE DE DESCRIPTION]"
 image: "cover.png"          # image IA — 1200×630px, style cohérent avec les autres articles
-draft: true
 ---
 
 <!-- 

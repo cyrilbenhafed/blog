@@ -38,3 +38,6 @@ __pycache__/
 .vscode/
 *.swp
 *.swo
+/.quarto/
+**/*.quarto_ipynb
+**/*.quarto_ipynb_*

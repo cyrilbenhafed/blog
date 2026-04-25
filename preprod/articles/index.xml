@@ -1,0 +1,661 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/" 
+      version="2.0">
+<channel>
+<title>Cyril Benhafed</title>
+<link>https://blog.benhafed.com/articles/</link>
+<atom:link href="https://blog.benhafed.com/articles/index.xml" rel="self" type="application/rss+xml"/>
+<description>Retours d&#39;expérience, explorations techniques et mise en production — data science, MLOps, LLM.</description>
+<generator>quarto-1.9.37</generator>
+<lastBuildDate>Mon, 06 Apr 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Tests de modèles de génération d’images en local</title>
+  <dc:creator>Cyril Benhafed</dc:creator>
+  <link>https://blog.benhafed.com/articles/blog-visual_generation/</link>
+  <description><![CDATA[ 
+
+
+
+
+<p><img src="https://blog.benhafed.com/articles/blog-visual_generation/outputs/sana_sprint_0.png" class="img-fluid"></p>
+<section id="contexte" class="level1">
+<h1>Contexte</h1>
+<section id="a-la-recherche-dune-identité-visuelle" class="level2">
+<h2 class="anchored" data-anchor-id="a-la-recherche-dune-identité-visuelle">A la recherche d’une identité visuelle</h2>
+<p>Alors que j’écrivais le premier billet de ce blog, je me suis dit qu’il me fallait des images pour illustrer le contenu et rendre la lecture plus agréable. Comme nous sommes à l’ère de l’IA générative, plus besoin de passer des heures sur <a href="https://pixabay.com/">Pixabay</a> (ou autre site d’images libres de droit) à la recherche de l’image parfaite : ces nouveaux modèles permettent de créer des images photoréalistes sur commande (ou plutôt sur “prompt”). Dans mon cas, ce qui m’intéressait particulièrement était de pouvoir créer une <em>identité visuelle</em>, en gardant une constance / cohérence dans les illustrations de mon blog.</p>
+<p>Pour changer des éternelles images sur l’IA type science fiction avec des faisceaux de lumières sur fond noir, j’ai voulu prendre le contre pied et partir sur un thème léger et original. Je suis un grand fan (et collectionneur) de comics strips : ces petites histoires comiques qui se développent sur quelques cases dans les journaux papiers, comme Calvin &amp; Hobbes, Snoopy, Pearls Before Swine… Mon idée est donc d’apporter ce type de visuel très croquis / cartoon pour ce blog. En le pilotant donc à l’aide des prompts que j’utiliserai pour développer ces images.</p>
+</section>
+<section id="létat-de-lart-à-lheure-daujourdhui" class="level2">
+<h2 class="anchored" data-anchor-id="létat-de-lart-à-lheure-daujourdhui">L’état de l’art… à l’heure d’aujourd’hui</h2>
+<p>Je n’avais pas suivi de très près l’évolution des modèles de génération d’image, mais je sais que <strong>ChatGPT</strong> d’OpenAI a fait beaucoup parler de lui, notamment avec sa capacité à produire des images “à la Ghibli” (avec les problèmes de copyright que cela a <a href="https://lareclame.fr/chatgpt-studioghibli-313028">posé</a>). Et <strong>Nano Banana</strong> de Google s’est aussi distingué ces derniers temps, les 2 entreprises se partagent le podium de la génération d’image sur <a href="https://llm-stats.com/">LLM Stats</a>.</p>
+<p>Mais ce n’est pas la direction que je souhaitais prendre : je n’aime pas être contraint par des solutions propriétaires dont l’évolution rapide (prix, fin de produit, etc.), peut m’amener à changer de solution tous les 4 matins. Le décomissionnement récent de <a href="https://www.franceinfo.fr/internet/intelligence-artificielle/openai-ferme-sora-son-application-de-videos-generees-par-ia_7892921.html">Sora</a> (toujours de OpenAI) en est un bon rappel.</p>
+<p>Il reste donc les solutions <strong>open source</strong>, heureusement fort nombreuses et de qualité. Il y a déjà la famille des Stable Diffusion qui a été aux prémices de la génération d’image par IA dans le domaine du libre, et dont le modèle <a href="https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0">XL</a> est toujours en tête des téléchargements sur Hugging Face. Mais c’est surtout la famille des modèles <strong>Flux</strong> de Black Forest Labs qui fait école aujourd’hui, avec des images générées de qualité vraiment impressionnante. Mais, comme pour les solutions propriétaires, le paysage évolue très vite et des challengers apparaissent tous les jours : Z Image, Qwen Image, … Comme pour les LLM de génération de texte, beaucoup de ces nouveaux modèles viennent de Chine et ont une approche plus sobre en termes de configuration requise.</p>
+</section>
+</section>
+<section id="exploration" class="level1">
+<h1>Exploration</h1>
+<section id="les-constantes" class="level2">
+<h2 class="anchored" data-anchor-id="les-constantes">Les constantes</h2>
+<p>Ces présentations faites, il est temps de passer aux choses sérieuses et d’écrire du code pour générer ces fameux visuels. Je le disais tout à l’heure, mon idée est d’avoir une identité visuelle inspirée des comics strips de journaux. J’ai donc écrit un prompt générique pour le style graphique, en m’aidant d’un LLM (Claude Sonnet 4.6). Le prompt est en anglais, certains modèles ne supportant que cette langue en input.</p>
+<div id="fce9397d" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1">STYLE_ANCHOR <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"""Pen and ink illustration in the tradition of newspaper comic strips.</span></span>
+<span id="cb1-2"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Style evokes Bill Watterson's Calvin and Hobbes: expressive brushwork,</span></span>
+<span id="cb1-3"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">confident ink linework, light crosshatching for shadows, generous</span></span>
+<span id="cb1-4"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">whitespace, and occasional sparse watercolor-like tints — never flat fills.</span></span>
+<span id="cb1-5"></span>
+<span id="cb1-6"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Background: off-white paper texture, warm and slightly aged.</span></span>
+<span id="cb1-7"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Palette: near-monochrome ink with at most 2 restrained accent colors,</span></span>
+<span id="cb1-8"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">applied sparingly as washes rather than fills.</span></span>
+<span id="cb1-9"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">No gradients, no digital effects, no screen tones, no halftone dots.</span></span>
+<span id="cb1-10"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">No embedded text, no speech bubbles, no captions.</span></span>
+<span id="cb1-11"></span>
+<span id="cb1-12"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Characters when present: anthropomorphic animals rendered with</span></span>
+<span id="cb1-13"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">expressive body language and clear silhouettes. Postures tell the story</span></span>
+<span id="cb1-14"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">without words — curiosity, concentration, mild exasperation, wonder.</span></span>
+<span id="cb1-15"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Line quality varies: thick confident outlines, thin detail lines inside.</span></span>
+<span id="cb1-16"></span>
+<span id="cb1-17"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Objects and settings: simplified but recognizable, drawn with the economy</span></span>
+<span id="cb1-18"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">of a skilled cartoonist. Machinery looks mechanical and slightly whimsical.</span></span>
+<span id="cb1-19"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Negative space is used deliberately — the white of the paper is part of the composition.</span></span>
+<span id="cb1-20"></span>
+<span id="cb1-21"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Mood: warm, slightly wry, intellectually playful. The kind of illustration</span></span>
+<span id="cb1-22"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">that makes a technical concept feel approachable and human."""</span></span></code></pre></div></div>
+</div>
+<p>Enfin, définissons une “scène” qui sera rajoutée au prompt, et qui sera différente pour tous les visuels à créer. Je vais générer ici un visuel pour… ce même article (que c’est méta !). Partons sur un renard dessinant sur une table de dessinateur.</p>
+<div id="1e92c9c7" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">SCENE <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"""</span></span>
+<span id="cb2-2"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">fox artist working at a large professional drafting table, slanted drawing board, sketching with precision, studio setting</span></span>
+<span id="cb2-3"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"""</span></span></code></pre></div></div>
+</div>
+<p>Finissons enfin par quelques constantes : le seed (pour la reproducibilité), le nombre d’images à générer et leurs dimensions.</p>
+<div id="14a14eb4" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">SEED <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">42</span></span>
+<span id="cb3-2">N_IMAGES <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span></span>
+<span id="cb3-3">WIDTH <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span></span>
+<span id="cb3-4">HEIGHT <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">576</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># this generates a 16:9 ratio. ideal for header image</span></span></code></pre></div></div>
+</div>
+</section>
+<section id="hugging-face-spaces" class="level2">
+<h2 class="anchored" data-anchor-id="hugging-face-spaces">Hugging Face spaces</h2>
+<p>Hugging Face propose des <a href="https://huggingface.co/spaces">spaces</a> qui exposent des modèles d’IA gratuitement : LLM, génération d’image, OCR, etc. Ils sont disponibles directement sans même s’enregistrer sur le site, mais avec un quota limité tout de même. Mieux : ils sont utilisables via API (sans token !), et sont généralement bien documentés.</p>
+<p>En utilisant leur package, c’est d’une simplicité déconcertante, par exemple avec <strong>Flux 2 Klein 9B</strong> :</p>
+<div id="158d028b" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> gradio_client <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Client, handle_file</span>
+<span id="cb4-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> shutil</span>
+<span id="cb4-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> pathlib <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Path</span>
+<span id="cb4-4"></span>
+<span id="cb4-5">Path(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"outputs"</span>).mkdir(exist_ok<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb4-6"></span>
+<span id="cb4-7"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(N_IMAGES):</span>
+<span id="cb4-8">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># code générant un fichier à partir du prompt. Le fichier est stocké dans un dossier temporaire stocké dans result</span></span>
+<span id="cb4-9">    client <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> Client(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black-forest-labs/FLUX.2-klein-9B"</span>)</span>
+<span id="cb4-10">    result <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> client.predict(</span>
+<span id="cb4-11">        prompt<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>STYLE_ANCHOR <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> SCENE,</span>
+<span id="cb4-12">        mode_choice<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Distilled (4 steps)"</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Utilise la version distillée pour génération plus rapide</span></span>
+<span id="cb4-13">        seed<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>SEED <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> i, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># on change le seed entre les 2 images (pour ne pas que ce soit les mêmes)</span></span>
+<span id="cb4-14">        width<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>WIDTH,</span>
+<span id="cb4-15">        height<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>HEIGHT,</span>
+<span id="cb4-16">        num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>,</span>
+<span id="cb4-17">        guidance_scale<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb4-18">        prompt_upsampling<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>,</span>
+<span id="cb4-19">        api_name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/generate"</span></span>
+<span id="cb4-20">    )</span>
+<span id="cb4-21"></span>
+<span id="cb4-22">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># on déplace le fichier à l'endroit souhaité</span></span>
+<span id="cb4-23">    destination_folder <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> Path(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"./outputs/"</span>)</span>
+<span id="cb4-24">    new_filename <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"hf_flux2_klein_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>i<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.png"</span>  </span>
+<span id="cb4-25">    final_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> os.path.join(destination_folder, new_filename)</span>
+<span id="cb4-26">    shutil.copy2(result[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>], final_path)</span></code></pre></div></div>
+</div>
+<p>Et voici les résultats, générés en l’espace de quelques secondes :</p>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><a href="outputs/hf_flux2_klein_0.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="https://blog.benhafed.com/articles/blog-visual_generation/outputs/hf_flux2_klein_0.png" class="img-fluid"></a></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><a href="outputs/hf_flux2_klein_1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="https://blog.benhafed.com/articles/blog-visual_generation/outputs/hf_flux2_klein_1.png" class="img-fluid"></a></p>
+</div>
+</div>
+</div>
+<p>C’est très bon ! Bien dans la tonalité que je recherche.</p>
+<p>Cependant le fait de dépendre d’un service cloud, qui peut lui aussi évoluer très vite, me chiffonne. Les spaces sont très pratiques mais changent rapidement, en fonction des nouveaux modèles qui arrivent, et l’offre de Hugging Face ne restera très probablement pas éternellement gratuite.</p>
+<p>Mon idée est donc de voir pour faire tourner ces modèles en local.</p>
+</section>
+<section id="en-local" class="level2">
+<h2 class="anchored" data-anchor-id="en-local">En local</h2>
+<p>Petit point sur ma config avant d’aller plus loin. J’utilise un HP Zbook G5, un PC portable <em>workstation</em> qui est une petite bombe… de 2018. Je l’ai effectivement acheté reconditionné, et son processeur Xeon E-2186M (proche d’un Intel Core i7 de 8e génération) et sa carte Quadro P3200 avec 6 Go de VRAM ne sont pas nés de la dernière pluie.</p>
+<p>Je l’utilise régulièrement pour mes projets ML / LLM sans problème. J’arrive à faire de l’<em>inférence</em> de LLM qui ont une taille de 10-15B paramètres (en version quantisée bien sûr), les modèles se chargeant partiellement en VRAM, et le reste sur ma RAM système (ce qu’on appelle <em>offload</em> dans le jargon). J’étais donc confiant dans la capacité de ma config à faire tourner par exemple le Flux 2 Klein 9B que l’on a vu, même lentement…</p>
+<section id="génération-dimage-une-conception-très-différente-des-llm" class="level3">
+<h3 class="anchored" data-anchor-id="génération-dimage-une-conception-très-différente-des-llm">Génération d’image : une conception très différente des LLM</h3>
+<p>Sauf que j’ai appris, bien à mes dépends, que les modèles de génération d’image différent des LLM sur ce point. Je passerai le nombre d’erreurs d’Out Of Memory (OOM) à répétition que j’ai connu avant de comprendre ce point.</p>
+<p>Je ne vais pas rentrer en détails sur l’explication technique, ça sera sûrement l’objet d’un autre article, mais là où un LLM doit stocker en mémoire les poides du modèle et les tokens qu’il a produit (via le KV cache), un modèle de génération d’image stocke les poids du modèle, <strong>tous</strong> les tokens de l’image à générer (donc plus l’image est grande, plus c’est lourd) et les tenseurs d’attention, qui croissent de manière <strong>quadratique</strong> avec la taille de l’image. Ajoutons à ça que ces modèles sont généralement conçus pour tourner exclusivement sur GPU, sans mécanisme d’offload, et cela donne le combo gagnant pour saturer la pauvre VRAM de mon PC.</p>
+<p>Heureusement, il y a des modèles très légers - notamment distillés - qui donnent des résultats acceptables. Et des outils permettent maintenant de limiter ce problème du chargement exclusif sur la VRAM, notamment OpenVINO. Commençons par voir un modèle très léger de Stable AI : leur modèle phare SDXL en distillé Turbo.</p>
+</section>
+<section id="sdxl-turbo" class="level3">
+<h3 class="anchored" data-anchor-id="sdxl-turbo">SDXL Turbo</h3>
+<p>SDXL est une version distillée du fameux modèle SDXL, pour rappel le modèle de génération d’image le plus téléchargé de Hugging Face. Cette version distillée permet d’arriver rapidement, en quelques étapes, à une image finale, là où le modèle de base en utilise bien plus (en général 20-50). L’idée est d’aller vite, au détriment d’un peu de perte de qualité, mais ce qui est intéressant pour des configs restreintes comme la mienne.</p>
+<p>SDXL étant un modèle assez ancien, il utilise un encodeur de texte, CLIP, qui a une capacité maximale de <strong>77 tokens</strong>. Autant dire que la longue description de <code>STYLE_ANCHOR</code> est bien trop importante pour tenir dans cette petite fenêtre. Réécriture donc obligatoire, en se limitant fortement sur le nombre de mots.</p>
+<div id="76dfea48" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">STYLE_ANCHOR_SHORT <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"""</span></span>
+<span id="cb5-2"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">pen and ink, newspaper comic strip, calvin &amp; hobbes style,</span></span>
+<span id="cb5-3"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">large expressive head, simple rounded body, anthropomorphic animal character,</span></span>
+<span id="cb5-4"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">clean thin linework, off-white background, watercolor spot color,</span></span>
+<span id="cb5-5"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">no gradients, no digital effects, no text</span></span>
+<span id="cb5-6"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"""</span></span></code></pre></div></div>
+</div>
+<p>Ensuite, place à l’instanciation du modèle :</p>
+<div id="68e480da" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> AutoPipelineForText2Image</span>
+<span id="cb6-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> torch</span>
+<span id="cb6-3"></span>
+<span id="cb6-4">pipe_t1 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> AutoPipelineForText2Image.from_pretrained(</span>
+<span id="cb6-5">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"stabilityai/sdxl-turbo"</span>,</span>
+<span id="cb6-6">    torch_dtype<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>torch.float32,</span>
+<span id="cb6-7">    variant<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fp16"</span></span>
+<span id="cb6-8">)</span>
+<span id="cb6-9">pipe_t1.enable_attention_slicing()</span></code></pre></div></div>
+</div>
+<p>Et la création des images :</p>
+<div id="0ac189d3" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(N_IMAGES):</span>
+<span id="cb7-2">    seed <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> SEED <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> i</span>
+<span id="cb7-3">    generator <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> torch.Generator(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cpu"</span>).manual_seed(seed)</span>
+<span id="cb7-4"></span>
+<span id="cb7-5">    result <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipe_t1(</span>
+<span id="cb7-6">        prompt<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>STYLE_ANCHOR_SHORT <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> SCENE,</span>
+<span id="cb7-7">        width<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>WIDTH,</span>
+<span id="cb7-8">        height<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>HEIGHT,</span>
+<span id="cb7-9">        num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># j'ai choisi de partir sur 3 étapes, les résultats étant étrangement meilleurs que ceux à 4, le maximum "pertinent" d'étapes d'après la doc officielle</span></span>
+<span id="cb7-10">        guidance_scale<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.0</span>,</span>
+<span id="cb7-11">        generator<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>generator,</span>
+<span id="cb7-12">    )</span>
+<span id="cb7-13"></span>
+<span id="cb7-14">    img <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> result.images[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>]</span>
+<span id="cb7-15">    img.save(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"outputs/sdxl_turbo_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>i<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.png"</span>)</span></code></pre></div></div>
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><a href="outputs/sdxl_turbo_0.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="https://blog.benhafed.com/articles/blog-visual_generation/outputs/sdxl_turbo_0.png" class="img-fluid"></a></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><a href="outputs/sdxl_turbo_1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="https://blog.benhafed.com/articles/blog-visual_generation/outputs/sdxl_turbo_1.png" class="img-fluid"></a></p>
+</div>
+</div>
+</div>
+<p>On le voit tout de suite, on est pas du tout sur le même niveau de qualité que le Flux 2 Klein qu’on a vu précédemment. On sent même des faux raccords : le bras du 1er renard, la présence d’un … 2e renard, etc.</p>
+<p>Bref, même si la génération est ok, on est de l’ordre de 1 min par image, la qualité n’est clairement pas suffisante pour mon cas d’usage. Pour être honnête, je ne suis pas dans sa zone de confort, étant donné que je demande des dimensions de 1024 x 576 là où le modèle recommandes l’utilisation de dimensions plus modestes (512 x 512). Ce qui explique sûrement</p>
+<p>Avant d’attaquer un nouveau modèle, un peu de cleaning pour libérer la RAM de mon PC.</p>
+<div id="5f13af54" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> gc</span>
+<span id="cb8-2"></span>
+<span id="cb8-3"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">del</span> pipe_t1</span>
+<span id="cb8-4">gc.collect()</span></code></pre></div></div>
+</div>
+</section>
+<section id="sdxl-lightning" class="level3">
+<h3 class="anchored" data-anchor-id="sdxl-lightning">SDXL Lightning</h3>
+<p>Lightning est une autre variante distillée de SDXL, sortie un an plus tard que Turbo, en 2024. En se basant sur un autre type de distillation, la promesse est de générer des images de meilleure qualité, et notamment de plus grande dimension que Turbo (ouf !).</p>
+<p>Ce modèle Lightning s’utilise <em>en plus</em> du modèle SDXL qui doit être chargé en RAM / VRAM. Comme je suis déjà très limite avec ma configuration, je suis passé par une version packagifiée de ces 2 modèles qui a été faite dans le cadre du projet <a href="https://github.com/rupeshs/fastsdcpu">FastSD CPU</a>. L’idée derrière cette initiative est de permettre d’utiliser exclusivement son CPU (et donc sa RAM) pour de ma génération d’image, en proposant un client web et des modèles refondus pour l’occasion.</p>
+<p>Pour utiliser uniquement le CPU, ce projet s’appuie sur OpenVINO qu’on a déjà évoqué plus haut. On ne passe donc plus par la librairie Diffusers de Hugging Face, mais par optimum, qui a une API très proche. A noter que FastSD CPU propose surtout un outil en client web pour générer ces images, mais je préfère l’approche code pour plus de flexibilité.</p>
+<div id="ed289263" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> optimum.intel <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> OVStableDiffusionXLPipeline</span>
+<span id="cb9-2"></span>
+<span id="cb9-3">pipe_t2 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> OVStableDiffusionXLPipeline.from_pretrained(</span>
+<span id="cb9-4">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rupeshs/SDXL-Lightning-2steps-openvino-int8"</span>,</span>
+<span id="cb9-5">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">compile</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>,</span>
+<span id="cb9-6">)</span>
+<span id="cb9-7">pipe_t2.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">compile</span>()</span></code></pre></div></div>
+</div>
+<div id="da901fe8" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(N_IMAGES):</span>
+<span id="cb10-2">    result <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipe_t2(</span>
+<span id="cb10-3">        prompt<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>STYLE_ANCHOR_SHORT <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> SCENE,</span>
+<span id="cb10-4">        width<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>WIDTH,</span>
+<span id="cb10-5">        height<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>HEIGHT,</span>
+<span id="cb10-6">        num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>,</span>
+<span id="cb10-7">        guidance_scale<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb10-8">    ) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Note : pas de seed ici. Non supporté par OpenVINO</span></span>
+<span id="cb10-9"></span>
+<span id="cb10-10">    img <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> result.images[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>]</span>
+<span id="cb10-11">    img.save(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"outputs/sdxl_lightning_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>i<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.png"</span>)</span></code></pre></div></div>
+</div>
+<div id="b1f8d2d2" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">del</span> pipe_t2</span>
+<span id="cb11-2">gc.collect()</span></code></pre></div></div>
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><a href="outputs/sdxl_lightning_0.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="https://blog.benhafed.com/articles/blog-visual_generation/outputs/sdxl_lightning_0.png" class="img-fluid"></a></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><a href="outputs/sdxl_lightning_1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6"><img src="https://blog.benhafed.com/articles/blog-visual_generation/outputs/sdxl_lightning_1.png" class="img-fluid"></a></p>
+</div>
+</div>
+</div>
+<p>On voit qu’on a passé un cap au niveau de la qualité du rendu : plus de loupé dans le rendu, plus fin dans les détails, etc. Si je trouve le ton un peu trop “adulte” pour l’aspect comic strips que je recherche, cela pourrait être facilement amélioré à travers un fine tuning du prompt.</p>
+<p>Je pourrais partir sur ce modèle, mais en regardant le repo de FastSD CPU, j’ai vu qu’ils ont récemment porté le modèle Sana Sprint de Nvidia qui est encore plus récent (2025).</p>
+</section>
+<section id="sana-sprint-0.6b" class="level3">
+<h3 class="anchored" data-anchor-id="sana-sprint-0.6b">SANA Sprint 0.6B</h3>
+<p>Sana Sprint est la version distillée de <a href="https://nvlabs.github.io/Sana/">Sana</a>, un modèle de génération d’image developpé par Nvidia Labs. Derrière l’utilisation d’un nouveau type d’encodage, la promesse de ce modèle est d’être plus efficace (comprendre : moins gourmand) dans l’inférence d’images. Le modèle étant plus récent, il s’appuie enfin sur T5 pour l’encodage du prompt ce qui permet d’accéder à une fenêtre de 512 token, vs les 77 de CLIP.</p>
+<p>Malgré la petite taille du modèle distillé (seulement 0.6B !), le modèle demande quand même <a href="https://nvlabs.github.io/Sana/docs/installation/">9Go</a> de VRAM. Je passe donc par la version portée par FastSD CPU pour faire quelques tests.</p>
+<div id="468757b7" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> optimum.intel <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> OVPipelineForText2Image</span>
+<span id="cb12-2"></span>
+<span id="cb12-3">pipe_t3 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> OVPipelineForText2Image.from_pretrained(</span>
+<span id="cb12-4">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rupeshs/sana-sprint-0.6b-openvino-int4"</span>,</span>
+<span id="cb12-5">    ov_config<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>{<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"CACHE_DIR"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>},</span>
+<span id="cb12-6">)</span></code></pre></div></div>
+</div>
+<div id="129fd5a6" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>):</span>
+<span id="cb13-2">    result <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipe_t3(</span>
+<span id="cb13-3">        prompt<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>STYLE_ANCHOR <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> SCENE,</span>
+<span id="cb13-4">        width<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>WIDTH,</span>
+<span id="cb13-5">        height<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>HEIGHT,</span>
+<span id="cb13-6">        num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>,</span>
+<span id="cb13-7">        guidance_scale<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4.5</span>,</span>
+<span id="cb13-8">    )</span>
+<span id="cb13-9"></span>
+<span id="cb13-10">    img <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> result.images[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>]</span>
+<span id="cb13-11">    img.save(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"outputs/sana_sprint_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>i<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.png"</span>)</span></code></pre></div></div>
+</div>
+<div id="babfc6d2" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">del</span> pipe_t3</span>
+<span id="cb14-2">gc.collect()</span></code></pre></div></div>
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><a href="outputs/sana_sprint_0.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7"><img src="https://blog.benhafed.com/articles/blog-visual_generation/outputs/sana_sprint_0.png" class="img-fluid"></a></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><a href="outputs/sana_sprint_1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8"><img src="https://blog.benhafed.com/articles/blog-visual_generation/outputs/sana_sprint_1.png" class="img-fluid"></a></p>
+</div>
+</div>
+</div>
+<p>Encore une fois, je trouve qu’un palier a été passé au niveau de la qualité d’image. Si on n’est pas encore au niveau d’un Flux, et qu’il y a même encore un peu de déchet (une petite queue de renard en trop…), on est clairement sur quelque chose d’exploitable pour le blog.</p>
+</section>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>Ce petit tour d’horizon des modèles de génération d’image m’a appris pas mal de choses :</p>
+<ul>
+<li>après toutes ces erreurs mémoires (OOM), j’ai maintenant compris que leur conception différente, et notamment le fait de devoir stocker tous les tokens de l’image plus les tenseurs d’attention font que leur besoin en VRAM (ou même en RAM) sont très importants ! Ce n’est pas demain que je vais pouvoir charger un modèle Flux sur mon PC.</li>
+<li>Les modèles distillés permettent de réduire drastiquement le temps de génération d’image. Je vais sûrement consacrer un article dessus car je trouve l’approche très intéressante.</li>
+<li>Comme pour les LLM classiques, les avancées technologiques et autres optimisations ont permis d’avoir des modèles beaucoup plus légers qui arrivent à des niveaux de qualité vraiment intéressants. Je garde un oeil sur les modèles qui vont arriver sur 2026 !</li>
+</ul>
+<p>Une de mes prochaines étapes sera de monter un petit projet de gestion de bibliothèque d’image, afin de me permettre de gérer au mieux la génération et la gestion de ces “assets” graphiques. Et qui sait, permettre de facilement changer et tout regénérer les images du blog si un nouveau modèle prometteur arrive.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>outils</category>
+  <category>genai</category>
+  <guid>https://blog.benhafed.com/articles/blog-visual_generation/</guid>
+  <pubDate>Mon, 06 Apr 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://blog.benhafed.com/articles/blog-visual_generation/outputs/sana_sprint_0.png" medium="image" type="image/png" height="81" width="144"/>
+</item>
+</channel>
+</rss>

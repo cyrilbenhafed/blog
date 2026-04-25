@@ -1,0 +1,20 @@
+[
+  {
+    "listing": "/projets/index.html",
+    "items": []
+  },
+  {
+    "listing": "/notes/index.html",
+    "items": []
+  },
+  {
+    "listing": "/articles/index.html",
+    "items": [
+      "/articles/blog-visual_generation/index.html"
+    ]
+  },
+  {
+    "listing": "/reviews/index.html",
+    "items": []
+  }
+]

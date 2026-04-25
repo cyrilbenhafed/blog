@@ -64,6 +64,6 @@ author: "Cyril Benhafed"
 
 execute:
   freeze: auto
-  cache: true
+  cache: false
   warning: false
   message: false

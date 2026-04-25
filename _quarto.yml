@@ -56,7 +56,7 @@ format:
     toc-title: "Sommaire"
     number-sections: false
     smooth-scroll: true
-    link-external-newwindow: true
+    link-external-newwindow: false
     link-external-icon: false
 
 lang: fr

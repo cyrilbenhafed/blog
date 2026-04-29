@@ -1,6 +1,6 @@
 # _ci/valid_categories.yml
-# Liste des catégories autorisées pour les articles et projets
-# Pour ajouter une catégorie : ajouter une ligne ci-dessous et commiter sur dev
+# List of authorized categories for articles and projects
+# To add a category: add a line below and commit to dev
 
 categories:
   - mlops

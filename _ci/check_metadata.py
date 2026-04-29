@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
 _ci/check_metadata.py
-Valide les métadonnées YAML des fichiers .qmd avant déploiement.
-Vérifie : titre présent, date valide, catégorie(s) autorisée(s).
+Validates YAML metadata of .qmd files before deployment.
+Checks: title present, date valid, category/ies authorized.
 
-Règles d'exclusion :
-- Fichiers préfixés par _ (templates)
-- index.qmd à la racine directe d'un dossier de section (pages de listing)
-- index.qmd dans un sous-dossier = article valide, soumis aux checks
+Exclusion rules:
+- Files prefixed with _ (templates)
+- index.qmd at the root of a section folder (listing pages)
+- index.qmd in a subfolder = article, subject to checks
 """
 
 import os
@@ -16,27 +16,26 @@ import yaml
 import re
 from pathlib import Path
 
-# Dossiers de section à scanner
+# Section folders to scan
 SCAN_DIRS = ["articles", "projets", "reviews"]
 CATEGORIES_FILE = "_ci/valid_categories.yml"
 IGNORE_PREFIXES = {"_"}
 ERRORS = []
 
-# Charge les catégories valides
+# Load valid categories
 with open(CATEGORIES_FILE) as f:
     valid_categories = set(yaml.safe_load(f)["categories"])
 
 def is_listing_page(filepath, scan_dirs):
     """
-    Retourne True si le fichier est un index.qmd de listing —
-    c'est-à-dire un index.qmd directement à la racine d'un dossier de section.
-    Ex : articles/index.qmd → listing (ignoré)
-         articles/mon-article/index.qmd → article (vérifié)
+    Returns True if the file is a listing index.qmd —
+    i.e. an index.qmd directly at the root of a section folder.
+    Ex: articles/index.qmd -> listing (ignored)
+        articles/my-article/index.qmd -> article (checked)
     """
     p = Path(filepath)
     if p.name != "index.qmd":
         return False
-    # Le parent direct est-il un dossier de section ?
     return p.parent.name in scan_dirs
 
 def extract_frontmatter(filepath):
@@ -52,11 +51,11 @@ def extract_frontmatter(filepath):
 def check_file(filepath, scan_dirs):
     stem = Path(filepath).stem
 
-    # Ignorer les templates
+    # Skip templates
     if any(stem.startswith(p) for p in IGNORE_PREFIXES):
         return
 
-    # Ignorer les pages de listing (index.qmd à la racine d'une section)
+    # Skip listing pages (index.qmd at section root)
     if is_listing_page(filepath, scan_dirs):
         return
 
@@ -64,31 +63,31 @@ def check_file(filepath, scan_dirs):
     meta = extract_frontmatter(filepath)
 
     if meta is None:
-        ERRORS.append(f"[{rel}] Frontmatter YAML manquant ou invalide")
+        ERRORS.append(f"[{rel}] Missing or invalid YAML frontmatter")
         return
 
-    # Ignorer les drafts
+    # Skip drafts
     if meta.get("draft", False):
         return
 
-    # Vérification titre
+    # Check title
     if not meta.get("title") or str(meta["title"]).startswith("["):
-        ERRORS.append(f"[{rel}] Titre manquant ou placeholder non remplacé")
+        ERRORS.append(f"[{rel}] Missing title or unreplaced placeholder")
 
-    # Vérification date
+    # Check date
     if not meta.get("date"):
-        ERRORS.append(f"[{rel}] Date manquante")
+        ERRORS.append(f"[{rel}] Missing date")
 
-    # Vérification catégories
+    # Check categories
     cats = meta.get("categories", [])
     if not cats:
-        ERRORS.append(f"[{rel}] Aucune catégorie définie")
+        ERRORS.append(f"[{rel}] No category defined")
     else:
         for cat in cats:
             if cat not in valid_categories:
                 ERRORS.append(
-                    f"[{rel}] Catégorie inconnue : '{cat}' "
-                    f"(valides : {', '.join(sorted(valid_categories))})"
+                    f"[{rel}] Unknown category: '{cat}' "
+                    f"(valid: {', '.join(sorted(valid_categories))})"
                 )
 
 # Scan
@@ -98,12 +97,12 @@ for scan_dir in SCAN_DIRS:
         check_file(qmd_file, SCAN_DIRS)
         scanned += 1
 
-# Résultat
+# Result
 if ERRORS:
-    print("❌ Erreurs de métadonnées détectées :\n")
+    print("❌ Metadata errors detected:\n")
     for err in ERRORS:
         print(f"  • {err}")
     sys.exit(1)
 else:
-    print(f"✅ Métadonnées valides ({scanned} fichiers scannés)")
+    print(f"✅ Valid metadata ({scanned} files scanned)")
     sys.exit(0)

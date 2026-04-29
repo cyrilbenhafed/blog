@@ -67,3 +67,6 @@ execute:
   cache: false
   warning: false
   message: false
+
+language:
+  title-block-author-single: "Par"

@@ -1,0 +1,20 @@
+# Force LF line endings for all text files
+* text=auto eol=lf
+
+# Explicitly LF
+*.yml text eol=lf
+*.yaml text eol=lf
+*.qmd text eol=lf
+*.md text eol=lf
+*.py text eol=lf
+*.R text eol=lf
+*.scss text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.sh text eol=lf
+
+# Binary files — no conversion
+*.png binary
+*.jpg binary
+*.ico binary
+*.pdf binary

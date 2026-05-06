@@ -1,0 +1,31 @@
+---
+title: "Ma découverte inopinée du SCD Type 2"
+date: 2026-05-06
+categories: [découverte]
+---
+
+Je travaillais avec une collègue sur la mise en place d'une table pour assurer le suivi d'un status de segmentation sur les comptes clients de notre entreprise, et nous réfléchissions à la meilleure manière d'aborder le problème. 
+Faire des "snapshots" classique par jour à ajouter ("append") à la table serait trop lourd car un snapshot est déjà de l'ordre du million de lignes. Et impossible de garder uniquement le dernier snapshot : tout l'intérêt est de pouvoir tirer l'historique du client sur ses différentes phases.
+
+Nous est venu alors l'idée de faire uniquement un update sur les lignes similaires, pour avoir l'information que le client est toujours sur ce status. Quelque chose du genre (en simplifié) :
+
+| account | status     | start_date | end_date   |
+|---------|------------|------------|------------|
+| A       | Interested | 2026-05-06 | 2026-05-06 |
+
+Et chaque jour, faire uniquement un update (via le MERGE de Databricks) sur les lignes sans changement :
+
+| account | status     | start_date | end_date   |
+|---------|------------|------------|------------|
+| A       | Interested | 2026-05-06 | 2026-05-07 |
+
+Et enfin, en cas de changement, créer une nouvelle ligne :
+
+| account | status     | start_date | end_date   |
+|---------|------------|------------|------------|
+| A       | Interested | 2026-05-06 | 2026-05-07 |
+| A       | Customer   | 2026-05-08 | 2026-05-08 |
+
+On est allé voir un data engineer pour savoir ce qu'il pensait de notre "trouvaille", c'est en fait une approche qui existe de longue date en data management, et qui est très bien documenté, sous le nom de SCD de type 2. SCD signifie [**Slowly Changing Dimension**](https://en.wikipedia.org/wiki/Slowly_changing_dimension).
+
+Au final, on était content d'avoir la bonne intuition sur l'approche à avoir, mais aussi content de ne pas avoir à réinventer la roue ! Ca nous a permis de mettre en place les bonnes méthodes associées (par exemple avoir un champ *is_current*, etc.).

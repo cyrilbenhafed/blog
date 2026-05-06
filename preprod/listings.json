@@ -5,6 +5,12 @@
   },
   {
     "listing": "/notes/index.html",
+    "items": [
+      "/notes/2026-05-06_scd_type2.html"
+    ]
+  },
+  {
+    "listing": "/reviews/index.html",
     "items": []
   },
   {
@@ -12,9 +18,5 @@
     "items": [
       "/articles/blog-visual_generation/index.html"
     ]
-  },
-  {
-    "listing": "/reviews/index.html",
-    "items": []
   }
 ]

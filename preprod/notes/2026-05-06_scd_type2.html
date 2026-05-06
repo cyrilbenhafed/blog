@@ -7,9 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Cyril Benhafed">
-<meta name="description" content="Fragments du quotidien — découvertes, observations de terrain, lectures, réflexions.">
 
-<title>Notes – Cyril Benhafed</title>
+<title>Ma découverte inopinée du SCD Type 2 – Cyril Benhafed</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -36,8 +35,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
 <link href="../assets/favicon.ico" rel="icon">
-<script src="../site_libs/quarto-listing/list.min.js"></script>
-<script src="../site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -75,69 +72,11 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Recherche"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 <style>html{ scroll-behavior: smooth; }</style>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<meta property="og:title" content="Notes – Cyril Benhafed">
-<meta property="og:description" content="Fragments du quotidien — découvertes, observations de terrain, lectures, réflexions.">
+<meta property="og:title" content="Ma découverte inopinée du SCD Type 2 – Cyril Benhafed">
+<meta property="og:description" content="ML Engineer — Articles, projets et notes sur la data en production.">
 <meta property="og:site_name" content="Cyril Benhafed">
 </head>
 
@@ -171,7 +110,7 @@ window.Quarto = {
 <span class="menu-text">Reviews</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="../notes/index.html" aria-current="page"> 
+    <a class="nav-link" href="../notes/index.html"> 
 <span class="menu-text">Notes</span></a>
   </li>  
 </ul>
@@ -204,28 +143,26 @@ window.Quarto = {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
         
-    <h5 class="quarto-listing-category-title">Catégories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">Tous <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ZCVDMyVBOWNvdXZlcnRl">découverte <span class="quarto-category-count">(1)</span></div></div></div>
+    </div>
 <!-- main -->
-<main class="content column-page-left" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Notes</h1>
-</div>
-
-<div>
-  <div class="description">
-    Fragments du quotidien — découvertes, observations de terrain, lectures, réflexions.
+<h1 class="title">Ma découverte inopinée du SCD Type 2</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">découverte</div>
   </div>
-</div>
+  </div>
 
 
-<div class="quarto-title-meta column-page-left">
+
+<div class="quarto-title-meta">
 
     <div>
     <div class="quarto-title-meta-heading">Par</div>
@@ -234,6 +171,12 @@ window.Quarto = {
           </div>
   </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Date de publication</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">6 mai 2026</p>
+    </div>
+  </div>
   
     
   </div>
@@ -243,35 +186,76 @@ window.Quarto = {
 </header>
 
 
+<p>Je travaillais avec une collègue sur la mise en place d’une table pour assurer le suivi d’un status de segmentation sur les comptes clients de notre entreprise, et nous réfléchissions à la meilleure manière d’aborder le problème. Faire des “snapshots” classique par jour à ajouter (“append”) à la table serait trop lourd car un snapshot est déjà de l’ordre du million de lignes. Et impossible de garder uniquement le dernier snapshot : tout l’intérêt est de pouvoir tirer l’historique du client sur ses différentes phases.</p>
+<p>Nous est venu alors l’idée de faire uniquement un update sur les lignes similaires, pour avoir l’information que le client est toujours sur ce status. Quelque chose du genre (en simplifié) :</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>account</th>
+<th>status</th>
+<th>start_date</th>
+<th>end_date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>Interested</td>
+<td>2026-05-06</td>
+<td>2026-05-06</td>
+</tr>
+</tbody>
+</table>
+<p>Et chaque jour, faire uniquement un update (via le MERGE de Databricks) sur les lignes sans changement :</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>account</th>
+<th>status</th>
+<th>start_date</th>
+<th>end_date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>Interested</td>
+<td>2026-05-06</td>
+<td>2026-05-07</td>
+</tr>
+</tbody>
+</table>
+<p>Et enfin, en cas de changement, créer une nouvelle ligne :</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>account</th>
+<th>status</th>
+<th>start_date</th>
+<th>end_date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>Interested</td>
+<td>2026-05-06</td>
+<td>2026-05-07</td>
+</tr>
+<tr class="even">
+<td>A</td>
+<td>Customer</td>
+<td>2026-05-08</td>
+<td>2026-05-08</td>
+</tr>
+</tbody>
+</table>
+<p>On est allé voir un data engineer pour savoir ce qu’il pensait de notre “trouvaille”, c’est en fait une approche qui existe de longue date en data management, et qui est très bien documenté, sous le nom de SCD de type 2. SCD signifie <a href="https://en.wikipedia.org/wiki/Slowly_changing_dimension"><strong>Slowly Changing Dimension</strong></a>.</p>
+<p>Au final, on était content d’avoir la bonne intuition sur l’approche à avoir, mais aussi content de ne pas avoir à réinventer la roue ! Ca nous a permis de mettre en place les bonnes méthodes associées (par exemple avoir un champ <em>is_current</em>, etc.).</p>
 
 
 
-
-<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
-<div class="list grid quarto-listing-cols-2">
-<div class="g-col-1" data-index="0" data-categories="ZCVDMyVBOWNvdXZlcnRl" data-listing-date-sort="1778025600000" data-listing-file-modified-sort="1778058362062" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="332">
-<a href="../notes/2026-05-06_scd_type2.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Ma découverte inopinée du SCD Type 2
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('ZCVDMyVBOWNvdXZlcnRl'); return false;">découverte</div>
-
-</div>
-<div class="card-attribution card-text-small end">
-<div class="listing-date">
-6 mai 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-</div>
-<div class="listing-no-matching d-none">Aucun article correspondant</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

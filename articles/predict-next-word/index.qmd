@@ -1,0 +1,105 @@
+---
+title: "Les LLM expliqués à mon petit frère"
+date: 2026-04-14
+author: "Cyril Benhafed"
+categories: [genai]
+description: "Pourquoi la prédiction du prochain mot est à la base des modèles de Large Language Model"
+image: "cover.png"          # image IA — 1200×630px, style cohérent avec les autres articles
+---
+
+
+
+# Récupération des messages
+
+```{python}
+import glob
+import pandas as pd
+import re
+from dotenv import load_dotenv 
+load_dotenv()
+```
+
+
+```{python}
+target_number = os.getenv("BROTHER_PHONE")
+# On échappe le numéro de téléphone
+escaped_number = re.escape(target_number)
+regex_pattern = rf"^.*?\s-\s{escaped_number}:\s(.*)"
+
+# On va stocker les messages dans une simple liste Python
+messages = []
+
+# On parcours tous les fichiers de discussion
+for file in glob.glob("data/raw/*.txt"):
+    try:
+        with open(file, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                match = re.search(regex_pattern, line)
+                if match:
+                    messages.append(match.group(1))
+    except Exception as e:
+        print(f"Erreur lors de la lecture de {file}: {e}")
+
+print(f"Nombre de messages trouvés : {len(messages)}")
+```
+
+
+# Le prétraitement
+
+## Nettoyage
+
+Allons au plus simple, pour éviter 
+On va essayer de standardiser le texte afin d'avoir le moins de vocabulaire possible
+
+```{python}
+import re
+import unicodedata
+
+def clean_messages(messages):
+    cleaned_list = []
+    
+    for msg in messages:
+
+        # Tous les caractères "spéciaux" sont transformés en ascii : on remplace les accents par leur équivalent ("é" -> "e"), les cédilles ("ç" -> "c"), etc.
+        msg = unicodedata.normalize('NFKD', msg)
+        msg = msg.encode('ascii', 'ignore').decode('ascii')
+
+        # On convertit tout en minuscule
+        msg = msg.lower()    
+
+        # Toutes les ponctuations de fin de texte sont remplacées par un point "."
+        msg = re.sub(r'[!?;]+', '.', msg)
+        
+        # On supprime tout ce qui n'est pas du texte ou un point "." (remplacer par un espace)
+        msg = re.sub(r'[^a-z\s\.\']', ' ', msg)
+        
+        # On nettoie les espaces en trop
+        msg = re.sub(r'\s+', ' ', msg).strip()
+        
+        cleaned_list.append(msg)
+        
+    return cleaned_list
+
+messages_clean = clean_messages(messages)
+print(messages_clean[:5])
+```
+
+
+La séparation en token, ou plus simplement tokenisation est un processus fondamental des LLM et plus généralement du traitement de texte. Il faut définir ce qu'on considère comme la plus petite unité de mesure
+
+## Approche
+
+[À rédiger]
+
+```python
+# code ici
+```
+
+## Résultats
+
+[À rédiger]
+
+## Ce que j'en retiens
+
+[À rédiger]

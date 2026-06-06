@@ -68,5 +68,7 @@ execute:
   warning: false
   message: false
 
+jupyter: python3
+
 language:
   title-block-author-single: "Par"

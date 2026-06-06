@@ -5,6 +5,7 @@ author: "Cyril Benhafed"
 categories: [genai]
 description: "Pourquoi la prédiction du prochain mot est à la base des modèles de Large Language Model"
 image: "cover.png"          # image IA — 1200×630px, style cohérent avec les autres articles
+jupyter: predict-next-word
 ---
 
 
@@ -15,7 +16,7 @@ image: "cover.png"          # image IA — 1200×630px, style cohérent avec les
 import glob
 import pandas as pd
 import re
-from dotenv import load_dotenv 
+from dotenv import load_dotenv
 load_dotenv()
 ```
 
@@ -86,7 +87,13 @@ print(messages_clean[:5])
 ```
 
 
-La séparation en token, ou plus simplement tokenisation est un processus fondamental des LLM et plus généralement du traitement de texte. Il faut définir ce qu'on considère comme la plus petite unité de mesure
+Pour comprendre comment un LLM traite le langage, il faut d'abord s'intéresser à sa brique élémentaire : le token. C'est son unité basique de traitement du texte, ce qu'il va manipuler notamment pour prédire la suite de sa génération. Pour la plupart des LLM, ce token, est une "partie de mot". Par exemple pour le mot "antibrouillard", il y aurait un token "anti" et un token "brouillard". Cela permet aux LLM de pouvoir reconstruire des mots complexes en comprenant leur sens. 
+
+Dans notre cas d'exemple très simple, on va utiliser comme token un mot. 
+
+```{python}
+
+```
 
 ## Approche
 

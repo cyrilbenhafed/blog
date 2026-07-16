@@ -344,6 +344,7 @@ Encore une fois, on retrouve bien le ton court et naturel des conversations de m
 En l'espace de quelques lignes de code, on a construit un petit modèle statistique de langage qui permet d'imiter - grossièrement - le fonctionnement des LLM. On a vu que cela permettait de générer des phrases "réalistes" pour le contexte (messagerie instantanée). Mais on a vu aussi clairement ses limites, avec des phrases générées qui n'avaient parfois pas grand sens.
 
 Cela nous a permis surtout au fil du chemin de passer en revue des concepts clés du domaine :
+
 - la **tokenisation** qui permet de découper un texte en unités manipulables par un modèle
 - la **context window** (fenêtre de contexte), qui détermine jusqu'où "voit" le modèle
 - on a vu aussi le concept d'**overfitting** appliqué aux LLM. Je reviendrai dessus très prochainement dans un autre article

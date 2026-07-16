@@ -3,34 +3,46 @@ title: "Les LLM expliqués à mon petit frère"
 date: 2026-04-14
 author: "Cyril Benhafed"
 categories: [genai]
-description: "Pourquoi la prédiction du prochain mot est à la base des modèles de Large Language Model"
-image: "cover.png"          # image IA — 1200×630px, style cohérent avec les autres articles
+description: "Comment la prédiction du prochain mot est à la base des modèles de Large Language Model"
+image: "cover.png"  
 jupyter: predict-next-word
 ---
 
+![](cover.png)
+
+# Contexte
+
+A l'occasion d'une discussion dans un bar, je me suis retrouvé à expliquer les fondamentaux de la construction des LLM à mon frère. Il faut dire que le sujet de l'IA est au coeur de toutes les conversations ces derniers temps : tout le monde utilise plus ou moins régulièrement ChatGPT (ou consort) et a son avis dessus. Mais la mécanique de ces modèles, le "comment ça marche", reste nébuleux aux yeux des néophytes. 
+
+Les LLM sont construits sur un principe simple : prédire le prochain mot d'une phrase. Le modèle en lui même est bien sûr beaucoup plus compliqué, il faudrait parler de réseaux de neurones, de l'architecture transformers, etc. Mais la mécanique peut vraiment se réduire à ce simple principe de prédiction du prochain mot. C'est d'ailleurs pour ça que les LLM génèrent leur réponse de gauche à droite : ce n'est pas une cachoterie esthétique, c'est littéralement le modèle à l'oeuvre en pleine action.
+
+Je me suis dit qu'il serait marrant - et didactique ! - de montrer à mon frère qu'il est possible de monter rapidement un modèle statistique tout bête qui ferait ce travail. Cela permet d'expliquer quelques concepts clés (la fenêtre de contexte, la température des modèles, etc.) à travers un modèle "jouet" (toy model). Et pour ajouter un peu de fun, j'ai récupéré les conversations Whatsapp de mon frère pour créer sa variante LLM !
 
 
-# Récupération des messages
+# La récupération des données
+
+Je passerai rapidement sur la récupération des données Whatsapp, dans un esprit à l'opposé des bonnes pratiques Devops / Data science (faite à la main, non versionnée, etc.). L'idée est de monter un projet simple "one shot", pas d'en faire un produit à mettre en production. 
+Je suis donc allé sur l'application Android Whatsapp et j'ai exporté via l'option dédiée les conversations une à une. Cela donne des fichiers textes avec une ligne par message, qui sont facilement exploitables.
+
+Par respect pour la vie privée de mon frère, j'ai caché son numéro de téléphone via une variable dans un fichier .env. C'est son numéro qui me permet d'identifier les messages qu'il a écrits.
 
 ```{python}
 import glob
+import os
 import pandas as pd
 import re
 from dotenv import load_dotenv
 load_dotenv()
-```
 
-
-```{python}
+# Je récupère le numéro de téléphone qui a été mis dans un env (qui est bien sur "git ignoré")
 target_number = os.getenv("BROTHER_PHONE")
-# On échappe le numéro de téléphone
 escaped_number = re.escape(target_number)
 regex_pattern = rf"^.*?\s-\s{escaped_number}:\s(.*)"
 
 # On va stocker les messages dans une simple liste Python
 messages = []
 
-# On parcours tous les fichiers de discussion
+# On parcourt tous les fichiers de discussion, et on ajoute chaque ligne correspondant à mon frère (chaque "match") dans la liste
 for file in glob.glob("data/raw/*.txt"):
     try:
         with open(file, 'r', encoding='utf-8') as f:
@@ -45,13 +57,17 @@ for file in glob.glob("data/raw/*.txt"):
 print(f"Nombre de messages trouvés : {len(messages)}")
 ```
 
+On voit que l'on récupère un bon nombre de messages : plus de 16.000 ! Mais soyons honnêtes, ça ne représente rien en traitement du langage naturel, surtout si on compare ça aux volumes de données titanesques utilisés pour l'entrainement des LLM actuels.
 
 # Le prétraitement
 
+Maintenant que nous avons récupéré la donnée sous un format brut, nous allons appliquer plusieurs étapes de retraitement afin de la rendre facilement utilisable par un modèle statistique : nettoyage des données (enlever les smileys, etc.), normalisation et enfin tokenisation. 
+
 ## Nettoyage
 
-Allons au plus simple, pour éviter 
-On va essayer de standardiser le texte afin d'avoir le moins de vocabulaire possible
+Le nettoyage des données va être assez simple et rustique : on va garder uniquement les caractères standard du texte (ASCII pour les connaisseurs) : on transforme donc les "é" et "è" en "e" et ainsi de suite. On va aussi tout passer en minuscule. L'idée derrière ces 2 étapes est d'avoir le **vocabulaire**, c'est à dire le nombre de mot différent, le plus restreint possible. Comme on applique un modèle statistique basé sur la fréquence d'apparition des mots, on veut par exemple que "Ménage" et "menage" soient un seul et même mot ("menage" en l'occurrence). A noter qu'il y a des techniques avancées qui permettent d'aller plus loin dans la normalisation des mots, notamment le stemming et la lemmatization. Mais je ne les utiliserai pas ici pour rester simple.
+
+Enfin un mot sur la ponctuation et les espaces. Toute ponctuation qui marque la fin d'une phrase, le "." bien entendu, mais aussi "?", "!", etc. est convertie simplement en ".". On les utilisera pour délimiter des phrases. Tous les espaces sont aussi standardisés : saut de ligne, espaces multiples et autres sont réduits à un simple espace " ".
 
 ```{python}
 import re
@@ -69,44 +85,269 @@ def clean_messages(messages):
         # On convertit tout en minuscule
         msg = msg.lower()    
 
-        # Toutes les ponctuations de fin de texte sont remplacées par un point "."
-        msg = re.sub(r'[!?;]+', '.', msg)
+        # Toutes les ponctuations de fin de texte sont remplacées par un point "." (même chose pour les "..." remplacés par un ".")
+        msg = re.sub(r'[!?;\.]+', '.', msg)
         
         # On supprime tout ce qui n'est pas du texte ou un point "." (remplacer par un espace)
         msg = re.sub(r'[^a-z\s\.\']', ' ', msg)
-        
+
+        # On nettoie le message système de Whatsapp qui indique qu'un média (photo, vidéo...) n'est pas récupéré
+        msg = re.sub(r'medias omis', ' ', msg)
+
         # On nettoie les espaces en trop
         msg = re.sub(r'\s+', ' ', msg).strip()
-        
+
         cleaned_list.append(msg)
         
     return cleaned_list
 
 messages_clean = clean_messages(messages)
-print(messages_clean[:5])
+print(messages_clean[:3])
 ```
 
+## Tokenisation
 
-Pour comprendre comment un LLM traite le langage, il faut d'abord s'intéresser à sa brique élémentaire : le token. C'est son unité basique de traitement du texte, ce qu'il va manipuler notamment pour prédire la suite de sa génération. Pour la plupart des LLM, ce token, est une "partie de mot". Par exemple pour le mot "antibrouillard", il y aurait un token "anti" et un token "brouillard". Cela permet aux LLM de pouvoir reconstruire des mots complexes en comprenant leur sens. 
+Pour comprendre comment un LLM traite le langage, il faut s'intéresser à sa brique élémentaire : le token. C'est son unité basique de traitement du texte, ce qu'il va manipuler notamment pour prédire la suite de sa génération. Pour la plupart des LLM, ce token est une "partie de mot". Par exemple pour le mot "antibrouillard", il peut y avoir un token "anti" et un token "brouillard". Cette décomposition d'un mot en blocs permet au LLM de "définir" un sens aux mots complexes (le "anti" lui permettant de "comprendre" que cela va contre le "brouillard"). A noter que tous les LLM n'utilisent pas la même tokenisation.
 
-Dans notre cas d'exemple très simple, on va utiliser comme token un mot. 
+Dans notre cas d'exemple très simple, on va utiliser comme token un mot entier (donc "antibrouillard" pour reprendre notre exemple). Et pour faciliter encore plus cette étape, la logique de cet exercice étant avant tout pédagogique, on va séparer en mots uniquement en se basant sur les espaces qui viennent tout droit de notre étape de cleaning.
+
+Détail important aussi, on l'a évoqué rapidement plus haut, on va délimiter des **phrases**, afin que notre LLM prédise des phrases qui se terminent. Sinon on se retrouverait à créer un générateur qui prédit des mots sans s'arrêter. Ce sont les "." qui vont les délimiter. Par convention, on va pour chaque phrase ajouter 2 tokens techniques : <BOS>, pour le début d'une phrase, <EOS> pour la fin d'une phrase. On verra qu'ils nous serviront plus tard dans la prédiction du prochain mot (et/ou de la fin de la phrase !).
 
 ```{python}
+sentences_tokenized = []
 
+# Notre tokenisation étant très simple (séparation par espace), on a uniquement à utiliser un strip pour séparer les mots. Un autre split est utilisé pour séparer les phrases avec les "."
+for message in messages_clean:
+    for sentence in [s.strip() for s in message.split(".") if s.strip()]:
+        sentences_tokenized.append(["<BOS>"] + sentence.split() + ["<EOS>"])
+
+print(sentences_tokenized[:3])
 ```
 
-## Approche
 
-[À rédiger]
+## Wrap up prétraitement
 
-```python
-# code ici
+Maintenant que nous avons fini avec les étapes de preprocessing, écrivons à partir de ce que l'on vient de faire une fonction utilitaire qui nous permettra d'appliquer ces traitements à du nouveau texte :
+
+```{python}
+def preprocess(messages):
+    cleaned_list = clean_messages(messages)
+
+    sentences = []
+    for message in cleaned_list:
+        for sentence in [s.strip() for s in message.split(".") if s.strip()]:
+            sentences.append(["<BOS>"] + sentence.split() + ["<EOS>"])
+
+    return sentences
 ```
 
-## Résultats
 
-[À rédiger]
+# La modélisation
 
-## Ce que j'en retiens
+Maintenant que notre data est propre, sous format de phrases de tokens (représentées par des listes de listes en Python), nous avons tout ce qu'il faut pour compter quels sont les mots les plus fréquents après une séquence. Et ensuite pour prédire quel mot utiliser pour continuer une phrase.
 
-[À rédiger]
+## Compter les occurrences
+
+Pour alimenter notre modèle statistique, nous devons calculer à quelle fréquence un mot apparait après une suite de mots. On arrive déjà à une première définition intéressante : de combien de mots doit être notre _suite de mots_ ?
+
+Si on prend **un** seul mot, on ne risque pas de capturer beaucoup de sens. Il n'aura quasiment aucun **contexte** sur la phrase. Par exemple il prédira peut-être le mot "balle" après "la", alors que la phrase commence par "il a mangé la". Pas idéal pour prédire des phrases qui ont un minimum de sens.
+
+Si on choisit un contexte **long** - de 10 mots par exemple - on fait face à 2 contraintes. Déjà le modèle va être très **lourd** à calculer. Mais surtout, vu la taille du jeu de données d'entrainement qu'on lui donne, qui est assez réduite, le modèle risque d'avoir trop peu d'exemples pour une suite de mots et peut donc se retrouver à "**overfitter**". L'overfit est un concept clé dans le machine learning, c'est le manque de capacité d'un modèle à généraliser. Reprenons un exemple, si la suite de mots est "il a mangé à 4h et maintenant il va se" et que l'on a un seul exemple dans notre jeu de données (mon frère qui m'aurait dit par exemple : "il a mangé à 4h et maintenant il va se _coucher_"). Le mot prédit sera **toujours** "coucher" après cette suite de mots.
+
+Une longue fenêtre de contexte implique donc qu'il faut un grand ensemble de données pour avoir des résultats pertinents. Pour information, les LLM actuels ont des fenêtres de contexte qui peuvent monter à 1 million de tokens, voire plus. Un million de tokens, c'est à peu près la taille de l'intégrale du Seigneur des Anneaux, il y a de quoi faire donc. Mais les moyens, en termes de données d'entrainement, et de puissance de calcul, sont bien sûr d'un autre ordre que notre exemple.
+
+Nous allons de notre côté nous arrêter sur une fenêtre de **3 mots**. On va donc calculer les occurrences de mots après une séquence de jusqu'à 3 mots.
+L'implémentation est un peu tricky : notre fenêtre doit aller **jusqu'à** 3 mots, mais elle peut être plus petite. Par exemple, pour un début de phrase, nous aurons moins de 3 mots de contexte pour deviner le prochain.
+
+Une fois les occurrences comptabilisées, on va appliquer une étape de normalisation pour avoir des probabilités.
+
+```{python}
+from collections import defaultdict, Counter
+
+# La taille MAX de la fenêtre (le n-gramme cible)
+MAX_WINDOW = 4
+
+def build_flexible_ngram_model(sentences_tokenized, max_window):
+    counts = defaultdict(Counter)
+
+    # On parcourt chaque phrase avec une fenêtre flexible
+    for sentence in sentences_tokenized:
+        # Pour chaque position i dans la phrase...
+        for i in range(len(sentence)):
+            # On définit la fin de notre fenêtre glissante
+            # Elle ne doit pas dépasser max_window et ne pas sortir de la phrase actuelle
+            # On cherche le mot suivant, donc on regarde jusqu'à i + max_window
+            for window_size in range(1, max_window + 1):
+                # Le "contexte" est la séquence de mots précédant le mot cible
+                # On définit l'index du mot cible (le dernier de notre fenêtre)
+                target_idx = i + window_size - 1
+                
+                # On vérifie qu'on ne dépasse pas la fin de la phrase actuelle
+                if target_idx < len(sentence):
+                    # Le contexte est ce qui précède target_idx, mais sans dépasser max_window-1
+                    # On prend les mots de l'index (i) jusqu'à (target_index - 1)
+                    context_start = i
+                    
+                    # Si le contexte est vide (cas du premier mot de la phrase), 
+                    # on peut décider soit de l'ignorer, soit de marquer un contexte spécial.
+                    # Ici, pour la pédagogie, on ne prend que si context_start < target_idx
+                    if context_start < target_idx:
+                        context = tuple(sentence[context_start:target_idx])
+                        next_word = sentence[target_idx]
+                        counts[context][next_word] += 1
+
+    # Normalisation
+    model = {}
+    for context, next_words_counts in counts.items():
+        total = sum(next_words_counts.values())
+        model[context] = {word: count / total for word, count in next_words_counts.items()}
+        
+    return model
+
+bro_model = build_flexible_ngram_model(sentences_tokenized, MAX_WINDOW)
+```
+
+Jetons un coup d'oeil rapide au dictionnaire ainsi créé :
+
+```{python}
+bro_model[("il", "a", "un", )]
+```
+
+## La prédiction
+
+La prédiction du prochain mot est plus subtile qu'on peut le penser au premier abord. Il ne s'agit pas de "bêtement" prédire le mot le plus **fréquent** après une séquence de mots. Cela donnerait un LLM assez ... plat et peu créatif. Construisons un exemple rapide pour s'en rendre compte.
+
+
+```{python}
+def predict_next_word(text):
+    # Pour construire les tokens sur lesquels on va prédire notre prochain mot, on utilise la fonction preprocess qu'on a construite plus haut. En ne prenant en compte que la dernière phrase
+    # Si le texte est vide (ou ne contient aucun mot), preprocess ne renvoie aucune phrase : on part alors directement de <BOS> pour générer une phrase de bout en bout
+    sentences = preprocess([text])
+    tokens = sentences[-1][:-1] if sentences else ["<BOS>"]
+
+    # Tant que l'on arrive pas à la fin de phrase, on répète la prédiction du prochain mot
+    while tokens[-1] != "<EOS>":
+        next_word = None
+
+        # On utilise une boucle pour gérer les séquence qu'on ne connaitrait pas (qui ne serait jamais apparues dans notre jeu d'entrainement). Si la séquence en cours n'a jamais été vue, alors on la réduit (on enlève des mots) pour augmenter nos chance de récupérer des probas
+        for window_size in range(min(MAX_WINDOW - 1, len(tokens)), 0, -1):
+            context = tuple(tokens[-window_size:])
+            if context in bro_model:
+                next_word = max(bro_model[context], key=bro_model[context].get)
+                break
+        
+        # Si même en réduisant le contexte, on tombe sur un mot qui n'a jamais été vu, alors on prend le mot le plus fréquemment cité en début de phrase (callback assez rustique on en conviendra...)
+        if next_word is None:
+            next_word = max(bro_model[("<BOS>",)], key=bro_model[("<BOS>",)].get)
+
+        tokens.append(next_word)
+
+    return " ".join(t for t in tokens if t not in ("<BOS>", "<EOS>"))
+```
+
+Faisons maintenant quelques tests :
+
+```{python}
+import textwrap
+
+# Fonction utilitaire dont le but est d'afficher l'input et l'output du modèle
+def print_results(pairs):
+    blocks = []
+
+    for input_text, result in pairs:
+        input_block = textwrap.fill(input_text, initial_indent="Input : ", subsequent_indent=" " * 8)
+        output_block = textwrap.fill(result, initial_indent="Output: ", subsequent_indent=" " * 8)
+        blocks.append(input_block + "\n" + output_block)
+
+    print("\n\n".join(blocks))
+
+print_results([
+    ("elle", predict_next_word("elle")),
+    ("elle est", predict_next_word("elle est")),
+    ("elle est trop", predict_next_word("elle est trop")),
+])
+```
+
+On conviendra qu'on a déjà vu plus créatif comme LLM. 
+
+C'est que les LLM sont construits sur une approche **probabiliste**, et non déterministique comme le modèle que l'on vient de créer. Cela leur permet d'avoir un ton plus naturel, plus humain, mais aussi d'être plus "créatif". L'inconvénient évident, c'est que pour un même prompt, un LLM retournera des réponses différentes. Pire, c'est ce qui peut générer les fameuses **hallucinations** dont on a beaucoup parlé : le LLM ne répète pas méthodiquement ce sur quoi il a été entrainé, il peut dévier et générer des incohérences liées à sa nature aléatoire.
+
+La plupart des LLM permettent de contrôler cette partie "stochastique" - mot compliqué pour dire basé sur une nature aléatoire - via leur API à travers deux paramètres :
+
+* la température, qui permet d'influer sur la probabilité de choisir un mot moins fréquent
+* le "top k", qui permet de déterminer quels sont les k mots les plus fréquents sur lesquels le LLM pourra piocher.
+
+Encore une fois, pour rester simple, on va se concentrer sur un seul concept, le top k. L'idée derrière ce paramètre est de limiter le choix du modèle aux k mots les plus fréquents pour sa prédiction. Par exemple les 5 mots les plus fréquents. Cela évite au modèle de possiblement prédire un mot très rare après une séquence, qui pourrait l'amener à une phrase sans queue ni tête.
+
+Mettons en place ce top k dans notre fonction, en prenant le **top 5**.
+
+```{python}
+import random
+
+random.seed(0)
+
+def predict_next_word_top_k(text, k=5):
+    # On preprocess le texte en utilisant la fonction que l'on avait définie
+    sentences = preprocess([text])
+    tokens = sentences[-1][:-1] if sentences else ["<BOS>"]
+
+    # Fonction qui permet de normaliser les probabilités récupérées des top k mots les plus fréquents
+    def sample_top_k(distribution, k):
+        top_words = sorted(distribution.items(), key=lambda x: x[1], reverse=True)[:k]
+        words, probs = zip(*top_words)
+        total = sum(probs)
+        renormalized_probs = [p / total for p in probs]
+        return random.choices(words, weights=renormalized_probs, k=1)[0]
+
+    # Tant que l'on arrive pas sur le token <EOS>, on continue de générer des mots
+    while tokens[-1] != "<EOS>":
+        next_word = None
+
+        # On utilise la fenêtre de contexte (window_size) : si on ne trouve pas d'entrée dans le modèle, on raccourcit celle-ci en retirant un mot
+        for window_size in range(min(MAX_WINDOW - 1, len(tokens)), 0, -1):
+            context = tuple(tokens[-window_size:])
+            if context in bro_model:
+                next_word = sample_top_k(bro_model[context], k)
+                break
+        
+        # Si malgré la réduction de la fenêtre de contexte on ne trouve toujours pas d'entrée dans le modèle, alors on prend le mot le plus fréquent utilisé en début de phrase (après <BOS>)
+        if next_word is None:
+            next_word = sample_top_k(bro_model[("<BOS>",)], k)
+
+        tokens.append(next_word)
+
+    return " ".join(t for t in tokens if t not in ("<BOS>", "<EOS>"))
+
+print_results([
+    ("elle", predict_next_word_top_k("elle")),
+    ("elle", predict_next_word_top_k("elle")),
+    ("elle", predict_next_word_top_k("elle")),
+])
+```
+
+On voit que les sorties sont beaucoup plus créatives et moins fermées que notre modèle déterministique. Les phrases ont l'air naturelles, même si elles n'ont pas beaucoup de sens (mention spéciale pour la 3e, particulièrement longue).
+
+Essayons quelques exemples de phrases créées de bout en bout :
+
+```{python}
+random.seed(0)
+print_results([
+    ("", predict_next_word_top_k("")),
+    ("", predict_next_word_top_k("")),
+    ("", predict_next_word_top_k("")),
+])
+```
+
+Encore une fois, on retrouve bien le ton court et naturel des conversations de messagerie instantanée.
+
+# Conclusion
+
+En l'espace de quelques lignes de code, on a construit un petit modèle statistique de langage qui permet d'imiter - grossièrement - le fonctionnement des LLM. On a vu que cela permettait de générer des phrases "réalistes" pour le contexte (messagerie instantanée). Mais on a vu aussi clairement ses limites, avec des phrases générées qui n'avaient parfois pas grand sens.
+
+Cela nous a permis surtout au fil du chemin de passer en revue des concepts clés du domaine :
+- la **tokenisation** qui permet de découper un texte en unités manipulables par un modèle
+- la **context window** (fenêtre de contexte), qui détermine jusqu'où "voit" le modèle
+- on a vu aussi le concept d'**overfitting** appliqué aux LLM. Je reviendrai dessus très prochainement dans un autre article
+- enfin, et s'il y a un point sur lequel j'aimerais bien insister c'est celui-là, on a vu la nature **probabiliste** des LLM, qui est autant un atout (phrases naturelles, créatives...) qu'un risque à suivre de près
+
+Et qu'est ce qu'en a pensé mon frère au final ? L'exercice l'a bien amusé, mais j'ai l'impression qu'il essaie de mettre à mal mon modèle en me répondant uniquement par émoji maintenant. Peut être un LLM émoji à mettre en place pour le contrer ?

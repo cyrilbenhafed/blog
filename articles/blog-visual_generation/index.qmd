@@ -5,11 +5,6 @@ author: "Cyril Benhafed"
 categories: [outils, genai]
 description: "A la recherche d'un modèle de génération d'image léger pour développer une identité visuelle pour ce blog"
 image: "outputs/sana_sprint_0.png"
-jupyter:
-  kernelspec:
-    name: blog-visual-generation
-    display_name: Blog visual generation
-    language: python
 execute:
   echo: true
   warning: false

@@ -22,12 +22,11 @@ jobs:
         with:
           r-version: "4.4"
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.11"
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+          enable-cache: true
 
       - name: Install R dependencies
         run: |
@@ -35,13 +34,12 @@ jobs:
         shell: Rscript {0}
 
       - name: Install Python dependencies
-        run: |
-          pip install jupyter nbformat
+        run: uv sync --frozen
 
       # ── CI checks ──────────────────────────────────────────────
 
       - name: Check YAML metadata (categories, date, title)
-        run: python _ci/check_metadata.py
+        run: uv run python _ci/check_metadata.py
 
       - name: Spell check (Vale — FR)
         uses: errata-ai/vale-action@v2
@@ -53,7 +51,7 @@ jobs:
       # ── Build & Deploy ─────────────────────────────────────────
 
       - name: Build Quarto site
-        run: quarto render
+        run: uv run quarto render
 
       - name: Deploy to GitHub Pages (preprod)
         uses: peaceiris/actions-gh-pages@v4

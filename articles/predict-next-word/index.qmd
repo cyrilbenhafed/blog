@@ -4,8 +4,7 @@ date: 2026-04-14
 author: "Cyril Benhafed"
 categories: [genai]
 description: "Comment la prédiction du prochain mot est à la base des modèles de Large Language Model"
-image: "cover.png"  
-jupyter: predict-next-word
+image: "cover.png"
 ---
 
 ![](cover.png)

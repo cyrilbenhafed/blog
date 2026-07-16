@@ -1,35 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://blog.benhafed.com/projets/index.html</loc>
-    <lastmod>2026-05-06T09:06:02.062Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.benhafed.com/notes/index.html</loc>
-    <lastmod>2026-05-06T09:06:02.062Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.benhafed.com/reviews/index.html</loc>
-    <lastmod>2026-05-06T09:06:02.063Z</lastmod>
+    <loc>https://blog.benhafed.com/index.html</loc>
+    <lastmod>2026-07-16T20:43:31.623Z</lastmod>
   </url>
   <url>
     <loc>https://blog.benhafed.com/articles/index.html</loc>
-    <lastmod>2026-05-06T09:06:02.061Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.benhafed.com/articles/blog-visual_generation/index.html</loc>
-    <lastmod>2026-05-06T09:06:02.046Z</lastmod>
+    <lastmod>2026-07-16T20:43:31.619Z</lastmod>
   </url>
   <url>
     <loc>https://blog.benhafed.com/STRUCTURE.html</loc>
-    <lastmod>2026-05-06T09:06:02.045Z</lastmod>
+    <lastmod>2026-07-16T20:43:31.603Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.benhafed.com/notes/index.html</loc>
+    <lastmod>2026-07-16T20:43:31.623Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.benhafed.com/reviews/index.html</loc>
+    <lastmod>2026-07-16T20:43:31.623Z</lastmod>
   </url>
   <url>
     <loc>https://blog.benhafed.com/notes/2026-05-06_scd_type2.html</loc>
-    <lastmod>2026-05-06T09:06:02.062Z</lastmod>
+    <lastmod>2026-07-16T20:43:31.623Z</lastmod>
   </url>
   <url>
-    <loc>https://blog.benhafed.com/index.html</loc>
-    <lastmod>2026-05-06T09:06:02.062Z</lastmod>
+    <loc>https://blog.benhafed.com/projets/index.html</loc>
+    <lastmod>2026-07-16T20:43:31.623Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.benhafed.com/articles/blog-visual_generation/index.html</loc>
+    <lastmod>2026-07-16T20:43:31.605Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.benhafed.com/articles/predict-next-word/index.html</loc>
+    <lastmod>2026-07-16T20:43:31.622Z</lastmod>
   </url>
 </urlset>

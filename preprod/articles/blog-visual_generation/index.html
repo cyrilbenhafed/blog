@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.37">
+<meta name="generator" content="quarto-1.9.38">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -77,10 +77,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-de63f62b328812d8e578a4d74e282472.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-22cdeb9ba0c8beb6944246e3c68521d6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-bdc8643c0e922cf983e7ab6a21cac5df.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
 <link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
 <link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
@@ -277,7 +277,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="les-constantes" class="level2">
 <h2 class="anchored" data-anchor-id="les-constantes">Les constantes</h2>
 <p>Ces présentations faites, il est temps de passer aux choses sérieuses et d’écrire du code pour générer ces fameux visuels. Je le disais tout à l’heure, mon idée est d’avoir une identité visuelle inspirée des comics strips de journaux. J’ai donc écrit un prompt générique pour le style graphique, en m’aidant d’un LLM (Claude Sonnet 4.6). Le prompt est en anglais, certains modèles ne supportant que cette langue en input.</p>
-<div id="fce9397d" class="cell" data-execution_count="1">
+<div id="b1d4315c" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>STYLE_ANCHOR <span class="op">=</span> <span class="st">"""Pen and ink illustration in the tradition of newspaper comic strips.</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="st">Style evokes Bill Watterson's Calvin and Hobbes: expressive brushwork,</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="st">confident ink linework, light crosshatching for shadows, generous</span></span>
@@ -302,13 +302,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="st">that makes a technical concept feel approachable and human."""</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Enfin, définissons une “scène” qui sera rajoutée au prompt, et qui sera différente pour tous les visuels à créer. Je vais générer ici un visuel pour… ce même article (que c’est méta !). Partons sur un renard dessinant sur une table de dessinateur.</p>
-<div id="1e92c9c7" class="cell" data-execution_count="2">
+<div id="7a4e5dc3" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>SCENE <span class="op">=</span> <span class="st">"""</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="st">fox artist working at a large professional drafting table, slanted drawing board, sketching with precision, studio setting</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Finissons enfin par quelques constantes : le seed (pour la reproducibilité), le nombre d’images à générer et leurs dimensions.</p>
-<div id="14a14eb4" class="cell" data-execution_count="3">
+<div id="b5ef815e" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>SEED <span class="op">=</span> <span class="dv">42</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>N_IMAGES <span class="op">=</span> <span class="dv">2</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>WIDTH <span class="op">=</span> <span class="dv">1024</span></span>
@@ -319,7 +319,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="hugging-face-spaces">Hugging Face spaces</h2>
 <p>Hugging Face propose des <a href="https://huggingface.co/spaces">spaces</a> qui exposent des modèles d’IA gratuitement : LLM, génération d’image, OCR, etc. Ils sont disponibles directement sans même s’enregistrer sur le site, mais avec un quota limité tout de même. Mieux : ils sont utilisables via API (sans token !), et sont généralement bien documentés.</p>
 <p>En utilisant leur package, c’est d’une simplicité déconcertante, par exemple avec <strong>Flux 2 Klein 9B</strong> :</p>
-<div id="158d028b" class="cell" data-execution_count="4">
+<div id="24c9e7e5" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gradio_client <span class="im">import</span> Client, handle_file</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shutil</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
@@ -376,7 +376,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="sdxl-turbo">SDXL Turbo</h3>
 <p>SDXL est une version distillée du fameux modèle SDXL, pour rappel le modèle de génération d’image le plus téléchargé de Hugging Face. Cette version distillée permet d’arriver rapidement, en quelques étapes, à une image finale, là où le modèle de base en utilise bien plus (en général 20-50). L’idée est d’aller vite, au détriment d’un peu de perte de qualité, mais ce qui est intéressant pour des configs restreintes comme la mienne.</p>
 <p>SDXL étant un modèle assez ancien, il utilise un encodeur de texte, CLIP, qui a une capacité maximale de <strong>77 tokens</strong>. Autant dire que la longue description de <code>STYLE_ANCHOR</code> est bien trop importante pour tenir dans cette petite fenêtre. Réécriture donc obligatoire, en se limitant fortement sur le nombre de mots.</p>
-<div id="76dfea48" class="cell" data-execution_count="5">
+<div id="8a6d84ed" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>STYLE_ANCHOR_SHORT <span class="op">=</span> <span class="st">"""</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="st">pen and ink, newspaper comic strip, calvin &amp; hobbes style,</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="st">large expressive head, simple rounded body, anthropomorphic animal character,</span></span>
@@ -385,7 +385,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Ensuite, place à l’instanciation du modèle :</p>
-<div id="68e480da" class="cell" data-execution_count="6">
+<div id="c57c2353" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> diffusers <span class="im">import</span> AutoPipelineForText2Image</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -397,7 +397,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>pipe_t1.enable_attention_slicing()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Et la création des images :</p>
-<div id="0ac189d3" class="cell" data-execution_count="7">
+<div id="83e3fc43" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(N_IMAGES):</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    seed <span class="op">=</span> SEED <span class="op">+</span> i</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    generator <span class="op">=</span> torch.Generator(<span class="st">"cpu"</span>).manual_seed(seed)</span>
@@ -427,7 +427,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>On le voit tout de suite, on est pas du tout sur le même niveau de qualité que le Flux 2 Klein qu’on a vu précédemment. On sent même des faux raccords : le bras du 1er renard, la présence d’un … 2e renard, etc.</p>
 <p>Bref, même si la génération est ok, on est de l’ordre de 1 min par image, la qualité n’est clairement pas suffisante pour mon cas d’usage. Pour être honnête, je ne suis pas dans sa zone de confort, étant donné que je demande des dimensions de 1024 x 576 là où le modèle recommandes l’utilisation de dimensions plus modestes (512 x 512). Ce qui explique sûrement</p>
 <p>Avant d’attaquer un nouveau modèle, un peu de cleaning pour libérer la RAM de mon PC.</p>
-<div id="5f13af54" class="cell" data-execution_count="8">
+<div id="1250745f" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gc</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">del</span> pipe_t1</span>
@@ -439,7 +439,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Lightning est une autre variante distillée de SDXL, sortie un an plus tard que Turbo, en 2024. En se basant sur un autre type de distillation, la promesse est de générer des images de meilleure qualité, et notamment de plus grande dimension que Turbo (ouf !).</p>
 <p>Ce modèle Lightning s’utilise <em>en plus</em> du modèle SDXL qui doit être chargé en RAM / VRAM. Comme je suis déjà très limite avec ma configuration, je suis passé par une version packagifiée de ces 2 modèles qui a été faite dans le cadre du projet <a href="https://github.com/rupeshs/fastsdcpu">FastSD CPU</a>. L’idée derrière cette initiative est de permettre d’utiliser exclusivement son CPU (et donc sa RAM) pour de ma génération d’image, en proposant un client web et des modèles refondus pour l’occasion.</p>
 <p>Pour utiliser uniquement le CPU, ce projet s’appuie sur OpenVINO qu’on a déjà évoqué plus haut. On ne passe donc plus par la librairie Diffusers de Hugging Face, mais par optimum, qui a une API très proche. A noter que FastSD CPU propose surtout un outil en client web pour générer ces images, mais je préfère l’approche code pour plus de flexibilité.</p>
-<div id="ed289263" class="cell" data-execution_count="9">
+<div id="173ee394" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> optimum.intel <span class="im">import</span> OVStableDiffusionXLPipeline</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>pipe_t2 <span class="op">=</span> OVStableDiffusionXLPipeline.from_pretrained(</span>
@@ -448,7 +448,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>pipe_t2.<span class="bu">compile</span>()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="da901fe8" class="cell" data-execution_count="10">
+<div id="923c7ab5" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(N_IMAGES):</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> pipe_t2(</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        prompt<span class="op">=</span>STYLE_ANCHOR_SHORT <span class="op">+</span> SCENE,</span>
@@ -461,7 +461,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    img <span class="op">=</span> result.images[<span class="dv">0</span>]</span>
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    img.save(<span class="ss">f"outputs/sdxl_lightning_</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">.png"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="b1f8d2d2" class="cell" data-execution_count="11">
+<div id="8b3f22ad" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">del</span> pipe_t2</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>gc.collect()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -482,7 +482,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="sana-sprint-0.6b">SANA Sprint 0.6B</h3>
 <p>Sana Sprint est la version distillée de <a href="https://nvlabs.github.io/Sana/">Sana</a>, un modèle de génération d’image developpé par Nvidia Labs. Derrière l’utilisation d’un nouveau type d’encodage, la promesse de ce modèle est d’être plus efficace (comprendre : moins gourmand) dans l’inférence d’images. Le modèle étant plus récent, il s’appuie enfin sur T5 pour l’encodage du prompt ce qui permet d’accéder à une fenêtre de 512 token, vs les 77 de CLIP.</p>
 <p>Malgré la petite taille du modèle distillé (seulement 0.6B !), le modèle demande quand même <a href="https://nvlabs.github.io/Sana/docs/installation/">9Go</a> de VRAM. Je passe donc par la version portée par FastSD CPU pour faire quelques tests.</p>
-<div id="468757b7" class="cell" data-execution_count="12">
+<div id="cdc06abd" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> optimum.intel <span class="im">import</span> OVPipelineForText2Image</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>pipe_t3 <span class="op">=</span> OVPipelineForText2Image.from_pretrained(</span>
@@ -490,7 +490,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    ov_config<span class="op">=</span>{<span class="st">"CACHE_DIR"</span>: <span class="st">""</span>},</span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="129fd5a6" class="cell" data-execution_count="13">
+<div id="a8b5e4af" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">10</span>):</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> pipe_t3(</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        prompt<span class="op">=</span>STYLE_ANCHOR <span class="op">+</span> SCENE,</span>
@@ -503,7 +503,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    img <span class="op">=</span> result.images[<span class="dv">0</span>]</span>
 <span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    img.save(<span class="ss">f"outputs/sana_sprint_</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">.png"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="babfc6d2" class="cell" data-execution_count="14">
+<div id="60bc1c33" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">del</span> pipe_t3</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>gc.collect()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </div>

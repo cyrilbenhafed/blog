@@ -1,7 +1,10 @@
 [
   {
-    "listing": "/projets/index.html",
-    "items": []
+    "listing": "/articles/index.html",
+    "items": [
+      "/articles/predict-next-word/index.html",
+      "/articles/blog-visual_generation/index.html"
+    ]
   },
   {
     "listing": "/notes/index.html",
@@ -14,9 +17,7 @@
     "items": []
   },
   {
-    "listing": "/articles/index.html",
-    "items": [
-      "/articles/blog-visual_generation/index.html"
-    ]
+    "listing": "/projets/index.html",
+    "items": []
   }
 ]

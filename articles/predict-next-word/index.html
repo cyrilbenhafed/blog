@@ -260,7 +260,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>La récupération des données</h1>
 <p>Je passerai rapidement sur la récupération des données Whatsapp, dans un esprit à l’opposé des bonnes pratiques Devops / Data science (faite à la main, non versionnée, etc.). L’idée est de monter un projet simple “one shot”, pas d’en faire un produit à mettre en production. Je suis donc allé sur l’application Android Whatsapp et j’ai exporté via l’option dédiée les conversations une à une. Cela donne des fichiers textes avec une ligne par message, qui sont facilement exploitables.</p>
 <p>Par respect pour la vie privée de mon frère, j’ai caché son numéro de téléphone via une variable dans un fichier .env. C’est son numéro qui me permet d’identifier les messages qu’il a écrits.</p>
-<div id="2cfdc0f8" class="cell" data-execution_count="1">
+<div id="b7fc66e4" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> glob</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -302,7 +302,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="nettoyage">Nettoyage</h2>
 <p>Le nettoyage des données va être assez simple et rustique : on va garder uniquement les caractères standard du texte (ASCII pour les connaisseurs) : on transforme donc les “é” et “è” en “e” et ainsi de suite. On va aussi tout passer en minuscule. L’idée derrière ces 2 étapes est d’avoir le <strong>vocabulaire</strong>, c’est à dire le nombre de mot différent, le plus restreint possible. Comme on applique un modèle statistique basé sur la fréquence d’apparition des mots, on veut par exemple que “Ménage” et “menage” soient un seul et même mot (“menage” en l’occurrence). A noter qu’il y a des techniques avancées qui permettent d’aller plus loin dans la normalisation des mots, notamment le stemming et la lemmatization. Mais je ne les utiliserai pas ici pour rester simple.</p>
 <p>Enfin un mot sur la ponctuation et les espaces. Toute ponctuation qui marque la fin d’une phrase, le “.” bien entendu, mais aussi “?”, “!”, etc. est convertie simplement en “.”. On les utilisera pour délimiter des phrases. Tous les espaces sont aussi standardisés : saut de ligne, espaces multiples et autres sont réduits à un simple espace ” “.</p>
-<div id="01e72044" class="cell" data-execution_count="2">
+<div id="9b92e4d1" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> unicodedata</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -346,7 +346,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Pour comprendre comment un LLM traite le langage, il faut s’intéresser à sa brique élémentaire : le token. C’est son unité basique de traitement du texte, ce qu’il va manipuler notamment pour prédire la suite de sa génération. Pour la plupart des LLM, ce token est une “partie de mot”. Par exemple pour le mot “antibrouillard”, il peut y avoir un token “anti” et un token “brouillard”. Cette décomposition d’un mot en blocs permet au LLM de “définir” un sens aux mots complexes (le “anti” lui permettant de “comprendre” que cela va contre le “brouillard”). A noter que tous les LLM n’utilisent pas la même tokenisation.</p>
 <p>Dans notre cas d’exemple très simple, on va utiliser comme token un mot entier (donc “antibrouillard” pour reprendre notre exemple). Et pour faciliter encore plus cette étape, la logique de cet exercice étant avant tout pédagogique, on va séparer en mots uniquement en se basant sur les espaces qui viennent tout droit de notre étape de cleaning.</p>
 <p>Détail important aussi, on l’a évoqué rapidement plus haut, on va délimiter des <strong>phrases</strong>, afin que notre LLM prédise des phrases qui se terminent. Sinon on se retrouverait à créer un générateur qui prédit des mots sans s’arrêter. Ce sont les “.” qui vont les délimiter. Par convention, on va pour chaque phrase ajouter 2 tokens techniques : <bos>, pour le début d’une phrase, <eos> pour la fin d’une phrase. On verra qu’ils nous serviront plus tard dans la prédiction du prochain mot (et/ou de la fin de la phrase !).</eos></bos></p>
-<div id="cf19704e" class="cell" data-execution_count="3">
+<div id="d0801b8d" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>sentences_tokenized <span class="op">=</span> []</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Notre tokenisation étant très simple (séparation par espace), on a uniquement à utiliser un strip pour séparer les mots. Un autre split est utilisé pour séparer les phrases avec les "."</span></span>
@@ -363,7 +363,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="wrap-up-prétraitement" class="level2">
 <h2 class="anchored" data-anchor-id="wrap-up-prétraitement">Wrap up prétraitement</h2>
 <p>Maintenant que nous avons fini avec les étapes de preprocessing, écrivons à partir de ce que l’on vient de faire une fonction utilitaire qui nous permettra d’appliquer ces traitements à du nouveau texte :</p>
-<div id="5c330e1d" class="cell" data-execution_count="4">
+<div id="278ec258" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> preprocess(messages):</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    cleaned_list <span class="op">=</span> clean_messages(messages)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -387,7 +387,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Une longue fenêtre de contexte implique donc qu’il faut un grand ensemble de données pour avoir des résultats pertinents. Pour information, les LLM actuels ont des fenêtres de contexte qui peuvent monter à 1 million de tokens, voire plus. Un million de tokens, c’est à peu près la taille de l’intégrale du Seigneur des Anneaux, il y a de quoi faire donc. Mais les moyens, en termes de données d’entrainement, et de puissance de calcul, sont bien sûr d’un autre ordre que notre exemple.</p>
 <p>Nous allons de notre côté nous arrêter sur une fenêtre de <strong>3 mots</strong>. On va donc calculer les occurrences de mots après une séquence de jusqu’à 3 mots. L’implémentation est un peu tricky : notre fenêtre doit aller <strong>jusqu’à</strong> 3 mots, mais elle peut être plus petite. Par exemple, pour un début de phrase, nous aurons moins de 3 mots de contexte pour deviner le prochain.</p>
 <p>Une fois les occurrences comptabilisées, on va appliquer une étape de normalisation pour avoir des probabilités.</p>
-<div id="976c7766" class="cell" data-execution_count="5">
+<div id="bd884021" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> defaultdict, Counter</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># La taille MAX de la fenêtre (le n-gramme cible)</span></span>
@@ -433,7 +433,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>bro_model <span class="op">=</span> build_flexible_ngram_model(sentences_tokenized, MAX_WINDOW)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Jetons un coup d’oeil rapide au dictionnaire ainsi créé :</p>
-<div id="233ef5d7" class="cell" data-execution_count="6">
+<div id="81f7363b" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>bro_model[(<span class="st">"il"</span>, <span class="st">"a"</span>, <span class="st">"un"</span>, )]</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>{'vieux': 0.3333333333333333,
@@ -445,7 +445,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="la-prédiction" class="level2">
 <h2 class="anchored" data-anchor-id="la-prédiction">La prédiction</h2>
 <p>La prédiction du prochain mot est plus subtile qu’on peut le penser au premier abord. Il ne s’agit pas de “bêtement” prédire le mot le plus <strong>fréquent</strong> après une séquence de mots. Cela donnerait un LLM assez … plat et peu créatif. Construisons un exemple rapide pour s’en rendre compte.</p>
-<div id="95e3b0f7" class="cell" data-execution_count="7">
+<div id="4c85f595" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict_next_word(text):</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Pour construire les tokens sur lesquels on va prédire notre prochain mot, on utilise la fonction preprocess qu'on a construite plus haut. En ne prenant en compte que la dernière phrase</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Si le texte est vide (ou ne contient aucun mot), preprocess ne renvoie aucune phrase : on part alors directement de &lt;BOS&gt; pour générer une phrase de bout en bout</span></span>
@@ -472,7 +472,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">" "</span>.join(t <span class="cf">for</span> t <span class="kw">in</span> tokens <span class="cf">if</span> t <span class="kw">not</span> <span class="kw">in</span> (<span class="st">"&lt;BOS&gt;"</span>, <span class="st">"&lt;EOS&gt;"</span>))</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Faisons maintenant quelques tests :</p>
-<div id="baeba503" class="cell" data-execution_count="8">
+<div id="e02cb319" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> textwrap</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Fonction utilitaire dont le but est d'afficher l'input et l'output du modèle</span></span>
@@ -511,7 +511,7 @@ Output: elle est trop belle</code></pre>
 </ul>
 <p>Encore une fois, pour rester simple, on va se concentrer sur un seul concept, le top k. L’idée derrière ce paramètre est de limiter le choix du modèle aux k mots les plus fréquents pour sa prédiction. Par exemple les 5 mots les plus fréquents. Cela évite au modèle de possiblement prédire un mot très rare après une séquence, qui pourrait l’amener à une phrase sans queue ni tête.</p>
 <p>Mettons en place ce top k dans notre fonction, en prenant le <strong>top 5</strong>.</p>
-<div id="885bd8c4" class="cell" data-execution_count="9">
+<div id="70fe887d" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>random.seed(<span class="dv">0</span>)</span>
@@ -566,7 +566,7 @@ Output: elle a toujours un qui vomi apres</code></pre>
 </div>
 <p>On voit que les sorties sont beaucoup plus créatives et moins fermées que notre modèle déterministique. Les phrases ont l’air naturelles, même si elles n’ont pas beaucoup de sens (mention spéciale pour la 3e, particulièrement longue).</p>
 <p>Essayons quelques exemples de phrases créées de bout en bout :</p>
-<div id="eda9b70f" class="cell" data-execution_count="10">
+<div id="b1fb9952" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>random.seed(<span class="dv">0</span>)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>print_results([</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    (<span class="st">""</span>, predict_next_word_top_k(<span class="st">""</span>)),</span>
@@ -591,7 +591,13 @@ Output: trop fort</code></pre>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
 <p>En l’espace de quelques lignes de code, on a construit un petit modèle statistique de langage qui permet d’imiter - grossièrement - le fonctionnement des LLM. On a vu que cela permettait de générer des phrases “réalistes” pour le contexte (messagerie instantanée). Mais on a vu aussi clairement ses limites, avec des phrases générées qui n’avaient parfois pas grand sens.</p>
-<p>Cela nous a permis surtout au fil du chemin de passer en revue des concepts clés du domaine : - la <strong>tokenisation</strong> qui permet de découper un texte en unités manipulables par un modèle - la <strong>context window</strong> (fenêtre de contexte), qui détermine jusqu’où “voit” le modèle - on a vu aussi le concept d’<strong>overfitting</strong> appliqué aux LLM. Je reviendrai dessus très prochainement dans un autre article - enfin, et s’il y a un point sur lequel j’aimerais bien insister c’est celui-là, on a vu la nature <strong>probabiliste</strong> des LLM, qui est autant un atout (phrases naturelles, créatives…) qu’un risque à suivre de près</p>
+<p>Cela nous a permis surtout au fil du chemin de passer en revue des concepts clés du domaine :</p>
+<ul>
+<li>la <strong>tokenisation</strong> qui permet de découper un texte en unités manipulables par un modèle</li>
+<li>la <strong>context window</strong> (fenêtre de contexte), qui détermine jusqu’où “voit” le modèle</li>
+<li>on a vu aussi le concept d’<strong>overfitting</strong> appliqué aux LLM. Je reviendrai dessus très prochainement dans un autre article</li>
+<li>enfin, et s’il y a un point sur lequel j’aimerais bien insister c’est celui-là, on a vu la nature <strong>probabiliste</strong> des LLM, qui est autant un atout (phrases naturelles, créatives…) qu’un risque à suivre de près</li>
+</ul>
 <p>Et qu’est ce qu’en a pensé mon frère au final ? L’exercice l’a bien amusé, mais j’ai l’impression qu’il essaie de mettre à mal mon modèle en me répondant uniquement par émoji maintenant. Peut être un LLM émoji à mettre en place pour le contrer ?</p>
 
 

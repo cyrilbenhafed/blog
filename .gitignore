@@ -40,3 +40,6 @@ __pycache__/
 /.quarto/
 **/*.quarto_ipynb
 **/*.quarto_ipynb_*
+
+# Data folders
+data/

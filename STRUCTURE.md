@@ -1,7 +1,30 @@
 # Structure du projet blog — benhafed.com
 
+## Environnement Python
+
+Un seul venv centralisé à la racine, géré par uv.
+
+```bash
+uv sync                  # installer / mettre à jour les dépendances
+uv add <package>         # ajouter une dépendance
+```
+
+Commandes Quarto à lancer depuis la racine :
+
+```bash
+uv run quarto preview    # prévisualisation locale
+uv run quarto render     # build complet
+```
+
+Dans VSCode : sélectionner `.venv/bin/python` comme interpréteur Python
+(Cmd+Shift+P → "Python: Select Interpreter" → `./.venv/bin/python`).
+
+---
+
 blog/
 ├── _quarto.yml                       configuration principale
+├── pyproject.toml                    dépendances Python centralisées (uv)
+├── uv.lock                           lockfile uv (commité)
 ├── custom.scss                       identité visuelle
 ├── index.qmd                         page d'accueil du blog
 │

@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Cyril Benhafed">
+<meta name="description" content="A la recherche d’un modèle de génération d’image léger pour développer une identité visuelle pour ce blog">
+
+<title>Tests de modèles de génération d’images en local – Cyril Benhafed</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../assets/favicon.ico" rel="icon">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-de63f62b328812d8e578a4d74e282472.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-bdc8643c0e922cf983e7ab6a21cac5df.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Pas de résultats",
+    "search-matching-documents-text": "documents trouvés",
+    "search-copy-link-title": "Copier le lien vers la recherche",
+    "search-hide-matches-text": "Cacher les correspondances additionnelles",
+    "search-more-match-text": "correspondance de plus dans ce document",
+    "search-more-matches-text": "correspondances de plus dans ce document",
+    "search-clear-button-title": "Effacer",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Annuler",
+    "search-submit-button-title": "Envoyer",
+    "search-label": "Recherche"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+<meta property="og:title" content="Tests de modèles de génération d’images en local – Cyril Benhafed">
+<meta property="og:description" content="A la recherche d’un modèle de génération d’image léger pour développer une identité visuelle pour ce blog">
+<meta property="og:image" content="https://blog.benhafed.com/articles/blog-visual_generation/outputs/sana_sprint_0.png">
+<meta property="og:site_name" content="Cyril Benhafed">
+<meta property="og:image:height" content="576">
+<meta property="og:image:width" content="1024">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Cyril Benhafed</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Recherche"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Basculer la navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../articles/index.html"> 
+<span class="menu-text">Articles</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../projets/index.html"> 
+<span class="menu-text">Projets</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../reviews/index.html"> 
+<span class="menu-text">Reviews</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../notes/index.html"> 
+<span class="menu-text">Notes</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://benhafed.com" target="_blank"> <i class="bi bi-house" role="img" aria-label="Retour au site principal">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../articles/index.xml"> <i class="bi bi-rss" role="img" aria-label="Flux RSS">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/cyril-benhafed/" target="_blank"> <i class="bi bi-linkedin" role="img" aria-label="LinkedIn">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/cyrilbenhafed" target="_blank"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Sommaire</h2>
+   
+  <ul>
+  <li><a href="#contexte" id="toc-contexte" class="nav-link active" data-scroll-target="#contexte">Contexte</a>
+  <ul class="collapse">
+  <li><a href="#a-la-recherche-dune-identité-visuelle" id="toc-a-la-recherche-dune-identité-visuelle" class="nav-link" data-scroll-target="#a-la-recherche-dune-identité-visuelle">A la recherche d’une identité visuelle</a></li>
+  <li><a href="#létat-de-lart-à-lheure-daujourdhui" id="toc-létat-de-lart-à-lheure-daujourdhui" class="nav-link" data-scroll-target="#létat-de-lart-à-lheure-daujourdhui">L’état de l’art… à l’heure d’aujourd’hui</a></li>
+  </ul></li>
+  <li><a href="#exploration" id="toc-exploration" class="nav-link" data-scroll-target="#exploration">Exploration</a>
+  <ul class="collapse">
+  <li><a href="#les-constantes" id="toc-les-constantes" class="nav-link" data-scroll-target="#les-constantes">Les constantes</a></li>
+  <li><a href="#hugging-face-spaces" id="toc-hugging-face-spaces" class="nav-link" data-scroll-target="#hugging-face-spaces">Hugging Face spaces</a></li>
+  <li><a href="#en-local" id="toc-en-local" class="nav-link" data-scroll-target="#en-local">En local</a>
+  <ul class="collapse">
+  <li><a href="#génération-dimage-une-conception-très-différente-des-llm" id="toc-génération-dimage-une-conception-très-différente-des-llm" class="nav-link" data-scroll-target="#génération-dimage-une-conception-très-différente-des-llm">Génération d’image : une conception très différente des LLM</a></li>
+  <li><a href="#sdxl-turbo" id="toc-sdxl-turbo" class="nav-link" data-scroll-target="#sdxl-turbo">SDXL Turbo</a></li>
+  <li><a href="#sdxl-lightning" id="toc-sdxl-lightning" class="nav-link" data-scroll-target="#sdxl-lightning">SDXL Lightning</a></li>
+  <li><a href="#sana-sprint-0.6b" id="toc-sana-sprint-0.6b" class="nav-link" data-scroll-target="#sana-sprint-0.6b">SANA Sprint 0.6B</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Tests de modèles de génération d’images en local</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">outils</div>
+    <div class="quarto-category">genai</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    A la recherche d’un modèle de génération d’image léger pour développer une identité visuelle pour ce blog
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Par</div>
+    <div class="quarto-title-meta-contents">
+             <p>Cyril Benhafed </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Date de publication</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">6 avril 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><img src="outputs/sana_sprint_0.png" class="img-fluid"></p>
+<section id="contexte" class="level1">
+<h1>Contexte</h1>
+<section id="a-la-recherche-dune-identité-visuelle" class="level2">
+<h2 class="anchored" data-anchor-id="a-la-recherche-dune-identité-visuelle">A la recherche d’une identité visuelle</h2>
+<p>Alors que j’écrivais le premier billet de ce blog, je me suis dit qu’il me fallait des images pour illustrer le contenu et rendre la lecture plus agréable. Comme nous sommes à l’ère de l’IA générative, plus besoin de passer des heures sur <a href="https://pixabay.com/">Pixabay</a> (ou autre site d’images libres de droit) à la recherche de l’image parfaite : ces nouveaux modèles permettent de créer des images photoréalistes sur commande (ou plutôt sur “prompt”). Dans mon cas, ce qui m’intéressait particulièrement était de pouvoir créer une <em>identité visuelle</em>, en gardant une constance / cohérence dans les illustrations de mon blog.</p>
+<p>Pour changer des éternelles images sur l’IA type science fiction avec des faisceaux de lumières sur fond noir, j’ai voulu prendre le contre pied et partir sur un thème léger et original. Je suis un grand fan (et collectionneur) de comics strips : ces petites histoires comiques qui se développent sur quelques cases dans les journaux papiers, comme Calvin &amp; Hobbes, Snoopy, Pearls Before Swine… Mon idée est donc d’apporter ce type de visuel très croquis / cartoon pour ce blog. En le pilotant donc à l’aide des prompts que j’utiliserai pour développer ces images.</p>
+</section>
+<section id="létat-de-lart-à-lheure-daujourdhui" class="level2">
+<h2 class="anchored" data-anchor-id="létat-de-lart-à-lheure-daujourdhui">L’état de l’art… à l’heure d’aujourd’hui</h2>
+<p>Je n’avais pas suivi de très près l’évolution des modèles de génération d’image, mais je sais que <strong>ChatGPT</strong> d’OpenAI a fait beaucoup parler de lui, notamment avec sa capacité à produire des images “à la Ghibli” (avec les problèmes de copyright que cela a <a href="https://lareclame.fr/chatgpt-studioghibli-313028">posé</a>). Et <strong>Nano Banana</strong> de Google s’est aussi distingué ces derniers temps, les 2 entreprises se partagent le podium de la génération d’image sur <a href="https://llm-stats.com/">LLM Stats</a>.</p>
+<p>Mais ce n’est pas la direction que je souhaitais prendre : je n’aime pas être contraint par des solutions propriétaires dont l’évolution rapide (prix, fin de produit, etc.), peut m’amener à changer de solution tous les 4 matins. Le décomissionnement récent de <a href="https://www.franceinfo.fr/internet/intelligence-artificielle/openai-ferme-sora-son-application-de-videos-generees-par-ia_7892921.html">Sora</a> (toujours de OpenAI) en est un bon rappel.</p>
+<p>Il reste donc les solutions <strong>open source</strong>, heureusement fort nombreuses et de qualité. Il y a déjà la famille des Stable Diffusion qui a été aux prémices de la génération d’image par IA dans le domaine du libre, et dont le modèle <a href="https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0">XL</a> est toujours en tête des téléchargements sur Hugging Face. Mais c’est surtout la famille des modèles <strong>Flux</strong> de Black Forest Labs qui fait école aujourd’hui, avec des images générées de qualité vraiment impressionnante. Mais, comme pour les solutions propriétaires, le paysage évolue très vite et des challengers apparaissent tous les jours : Z Image, Qwen Image, … Comme pour les LLM de génération de texte, beaucoup de ces nouveaux modèles viennent de Chine et ont une approche plus sobre en termes de configuration requise.</p>
+</section>
+</section>
+<section id="exploration" class="level1">
+<h1>Exploration</h1>
+<section id="les-constantes" class="level2">
+<h2 class="anchored" data-anchor-id="les-constantes">Les constantes</h2>
+<p>Ces présentations faites, il est temps de passer aux choses sérieuses et d’écrire du code pour générer ces fameux visuels. Je le disais tout à l’heure, mon idée est d’avoir une identité visuelle inspirée des comics strips de journaux. J’ai donc écrit un prompt générique pour le style graphique, en m’aidant d’un LLM (Claude Sonnet 4.6). Le prompt est en anglais, certains modèles ne supportant que cette langue en input.</p>
+<div id="b1d4315c" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>STYLE_ANCHOR <span class="op">=</span> <span class="st">"""Pen and ink illustration in the tradition of newspaper comic strips.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="st">Style evokes Bill Watterson's Calvin and Hobbes: expressive brushwork,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="st">confident ink linework, light crosshatching for shadows, generous</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="st">whitespace, and occasional sparse watercolor-like tints — never flat fills.</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="st">Background: off-white paper texture, warm and slightly aged.</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="st">Palette: near-monochrome ink with at most 2 restrained accent colors,</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="st">applied sparingly as washes rather than fills.</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="st">No gradients, no digital effects, no screen tones, no halftone dots.</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="st">No embedded text, no speech bubbles, no captions.</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="st">Characters when present: anthropomorphic animals rendered with</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="st">expressive body language and clear silhouettes. Postures tell the story</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="st">without words — curiosity, concentration, mild exasperation, wonder.</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="st">Line quality varies: thick confident outlines, thin detail lines inside.</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="st">Objects and settings: simplified but recognizable, drawn with the economy</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="st">of a skilled cartoonist. Machinery looks mechanical and slightly whimsical.</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="st">Negative space is used deliberately — the white of the paper is part of the composition.</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="st">Mood: warm, slightly wry, intellectually playful. The kind of illustration</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="st">that makes a technical concept feel approachable and human."""</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Enfin, définissons une “scène” qui sera rajoutée au prompt, et qui sera différente pour tous les visuels à créer. Je vais générer ici un visuel pour… ce même article (que c’est méta !). Partons sur un renard dessinant sur une table de dessinateur.</p>
+<div id="7a4e5dc3" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>SCENE <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="st">fox artist working at a large professional drafting table, slanted drawing board, sketching with precision, studio setting</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Finissons enfin par quelques constantes : le seed (pour la reproducibilité), le nombre d’images à générer et leurs dimensions.</p>
+<div id="b5ef815e" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>SEED <span class="op">=</span> <span class="dv">42</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>N_IMAGES <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>WIDTH <span class="op">=</span> <span class="dv">1024</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>HEIGHT <span class="op">=</span> <span class="dv">576</span> <span class="co"># this generates a 16:9 ratio. ideal for header image</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="hugging-face-spaces" class="level2">
+<h2 class="anchored" data-anchor-id="hugging-face-spaces">Hugging Face spaces</h2>
+<p>Hugging Face propose des <a href="https://huggingface.co/spaces">spaces</a> qui exposent des modèles d’IA gratuitement : LLM, génération d’image, OCR, etc. Ils sont disponibles directement sans même s’enregistrer sur le site, mais avec un quota limité tout de même. Mieux : ils sont utilisables via API (sans token !), et sont généralement bien documentés.</p>
+<p>En utilisant leur package, c’est d’une simplicité déconcertante, par exemple avec <strong>Flux 2 Klein 9B</strong> :</p>
+<div id="24c9e7e5" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gradio_client <span class="im">import</span> Client, handle_file</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shutil</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>Path(<span class="st">"outputs"</span>).mkdir(exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(N_IMAGES):</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># code générant un fichier à partir du prompt. Le fichier est stocké dans un dossier temporaire stocké dans result</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    client <span class="op">=</span> Client(<span class="st">"black-forest-labs/FLUX.2-klein-9B"</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> client.predict(</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        prompt<span class="op">=</span>STYLE_ANCHOR <span class="op">+</span> SCENE,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        mode_choice<span class="op">=</span><span class="st">"Distilled (4 steps)"</span>, <span class="co"># Utilise la version distillée pour génération plus rapide</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        seed<span class="op">=</span>SEED <span class="op">+</span> i, <span class="co"># on change le seed entre les 2 images (pour ne pas que ce soit les mêmes)</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        width<span class="op">=</span>WIDTH,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span>HEIGHT,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        num_inference_steps<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        guidance_scale<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        prompt_upsampling<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        api_name<span class="op">=</span><span class="st">"/generate"</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># on déplace le fichier à l'endroit souhaité</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    destination_folder <span class="op">=</span> Path(<span class="st">"./outputs/"</span>)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    new_filename <span class="op">=</span> <span class="ss">f"hf_flux2_klein_</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">.png"</span>  </span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    final_path <span class="op">=</span> os.path.join(destination_folder, new_filename)</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    shutil.copy2(result[<span class="dv">0</span>], final_path)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Et voici les résultats, générés en l’espace de quelques secondes :</p>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><a href="outputs/hf_flux2_klein_0.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="outputs/hf_flux2_klein_0.png" class="img-fluid"></a></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><a href="outputs/hf_flux2_klein_1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="outputs/hf_flux2_klein_1.png" class="img-fluid"></a></p>
+</div>
+</div>
+</div>
+<p>C’est très bon ! Bien dans la tonalité que je recherche.</p>
+<p>Cependant le fait de dépendre d’un service cloud, qui peut lui aussi évoluer très vite, me chiffonne. Les spaces sont très pratiques mais changent rapidement, en fonction des nouveaux modèles qui arrivent, et l’offre de Hugging Face ne restera très probablement pas éternellement gratuite.</p>
+<p>Mon idée est donc de voir pour faire tourner ces modèles en local.</p>
+</section>
+<section id="en-local" class="level2">
+<h2 class="anchored" data-anchor-id="en-local">En local</h2>
+<p>Petit point sur ma config avant d’aller plus loin. J’utilise un HP Zbook G5, un PC portable <em>workstation</em> qui est une petite bombe… de 2018. Je l’ai effectivement acheté reconditionné, et son processeur Xeon E-2186M (proche d’un Intel Core i7 de 8e génération) et sa carte Quadro P3200 avec 6 Go de VRAM ne sont pas nés de la dernière pluie.</p>
+<p>Je l’utilise régulièrement pour mes projets ML / LLM sans problème. J’arrive à faire de l’<em>inférence</em> de LLM qui ont une taille de 10-15B paramètres (en version quantisée bien sûr), les modèles se chargeant partiellement en VRAM, et le reste sur ma RAM système (ce qu’on appelle <em>offload</em> dans le jargon). J’étais donc confiant dans la capacité de ma config à faire tourner par exemple le Flux 2 Klein 9B que l’on a vu, même lentement…</p>
+<section id="génération-dimage-une-conception-très-différente-des-llm" class="level3">
+<h3 class="anchored" data-anchor-id="génération-dimage-une-conception-très-différente-des-llm">Génération d’image : une conception très différente des LLM</h3>
+<p>Sauf que j’ai appris, bien à mes dépends, que les modèles de génération d’image différent des LLM sur ce point. Je passerai le nombre d’erreurs d’Out Of Memory (OOM) à répétition que j’ai connu avant de comprendre ce point.</p>
+<p>Je ne vais pas rentrer en détails sur l’explication technique, ça sera sûrement l’objet d’un autre article, mais là où un LLM doit stocker en mémoire les poides du modèle et les tokens qu’il a produit (via le KV cache), un modèle de génération d’image stocke les poids du modèle, <strong>tous</strong> les tokens de l’image à générer (donc plus l’image est grande, plus c’est lourd) et les tenseurs d’attention, qui croissent de manière <strong>quadratique</strong> avec la taille de l’image. Ajoutons à ça que ces modèles sont généralement conçus pour tourner exclusivement sur GPU, sans mécanisme d’offload, et cela donne le combo gagnant pour saturer la pauvre VRAM de mon PC.</p>
+<p>Heureusement, il y a des modèles très légers - notamment distillés - qui donnent des résultats acceptables. Et des outils permettent maintenant de limiter ce problème du chargement exclusif sur la VRAM, notamment OpenVINO. Commençons par voir un modèle très léger de Stable AI : leur modèle phare SDXL en distillé Turbo.</p>
+</section>
+<section id="sdxl-turbo" class="level3">
+<h3 class="anchored" data-anchor-id="sdxl-turbo">SDXL Turbo</h3>
+<p>SDXL est une version distillée du fameux modèle SDXL, pour rappel le modèle de génération d’image le plus téléchargé de Hugging Face. Cette version distillée permet d’arriver rapidement, en quelques étapes, à une image finale, là où le modèle de base en utilise bien plus (en général 20-50). L’idée est d’aller vite, au détriment d’un peu de perte de qualité, mais ce qui est intéressant pour des configs restreintes comme la mienne.</p>
+<p>SDXL étant un modèle assez ancien, il utilise un encodeur de texte, CLIP, qui a une capacité maximale de <strong>77 tokens</strong>. Autant dire que la longue description de <code>STYLE_ANCHOR</code> est bien trop importante pour tenir dans cette petite fenêtre. Réécriture donc obligatoire, en se limitant fortement sur le nombre de mots.</p>
+<div id="8a6d84ed" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>STYLE_ANCHOR_SHORT <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="st">pen and ink, newspaper comic strip, calvin &amp; hobbes style,</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="st">large expressive head, simple rounded body, anthropomorphic animal character,</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="st">clean thin linework, off-white background, watercolor spot color,</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="st">no gradients, no digital effects, no text</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Ensuite, place à l’instanciation du modèle :</p>
+<div id="c57c2353" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> diffusers <span class="im">import</span> AutoPipelineForText2Image</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>pipe_t1 <span class="op">=</span> AutoPipelineForText2Image.from_pretrained(</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"stabilityai/sdxl-turbo"</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    torch_dtype<span class="op">=</span>torch.float32,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    variant<span class="op">=</span><span class="st">"fp16"</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>pipe_t1.enable_attention_slicing()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Et la création des images :</p>
+<div id="83e3fc43" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(N_IMAGES):</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    seed <span class="op">=</span> SEED <span class="op">+</span> i</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    generator <span class="op">=</span> torch.Generator(<span class="st">"cpu"</span>).manual_seed(seed)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> pipe_t1(</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        prompt<span class="op">=</span>STYLE_ANCHOR_SHORT <span class="op">+</span> SCENE,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        width<span class="op">=</span>WIDTH,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span>HEIGHT,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        num_inference_steps<span class="op">=</span><span class="dv">3</span>, <span class="co"># j'ai choisi de partir sur 3 étapes, les résultats étant étrangement meilleurs que ceux à 4, le maximum "pertinent" d'étapes d'après la doc officielle</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        guidance_scale<span class="op">=</span><span class="fl">0.0</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        generator<span class="op">=</span>generator,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    img <span class="op">=</span> result.images[<span class="dv">0</span>]</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    img.save(<span class="ss">f"outputs/sdxl_turbo_</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">.png"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><a href="outputs/sdxl_turbo_0.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="outputs/sdxl_turbo_0.png" class="img-fluid"></a></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><a href="outputs/sdxl_turbo_1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="outputs/sdxl_turbo_1.png" class="img-fluid"></a></p>
+</div>
+</div>
+</div>
+<p>On le voit tout de suite, on est pas du tout sur le même niveau de qualité que le Flux 2 Klein qu’on a vu précédemment. On sent même des faux raccords : le bras du 1er renard, la présence d’un … 2e renard, etc.</p>
+<p>Bref, même si la génération est ok, on est de l’ordre de 1 min par image, la qualité n’est clairement pas suffisante pour mon cas d’usage. Pour être honnête, je ne suis pas dans sa zone de confort, étant donné que je demande des dimensions de 1024 x 576 là où le modèle recommandes l’utilisation de dimensions plus modestes (512 x 512). Ce qui explique sûrement</p>
+<p>Avant d’attaquer un nouveau modèle, un peu de cleaning pour libérer la RAM de mon PC.</p>
+<div id="1250745f" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gc</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">del</span> pipe_t1</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>gc.collect()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="sdxl-lightning" class="level3">
+<h3 class="anchored" data-anchor-id="sdxl-lightning">SDXL Lightning</h3>
+<p>Lightning est une autre variante distillée de SDXL, sortie un an plus tard que Turbo, en 2024. En se basant sur un autre type de distillation, la promesse est de générer des images de meilleure qualité, et notamment de plus grande dimension que Turbo (ouf !).</p>
+<p>Ce modèle Lightning s’utilise <em>en plus</em> du modèle SDXL qui doit être chargé en RAM / VRAM. Comme je suis déjà très limite avec ma configuration, je suis passé par une version packagifiée de ces 2 modèles qui a été faite dans le cadre du projet <a href="https://github.com/rupeshs/fastsdcpu">FastSD CPU</a>. L’idée derrière cette initiative est de permettre d’utiliser exclusivement son CPU (et donc sa RAM) pour de ma génération d’image, en proposant un client web et des modèles refondus pour l’occasion.</p>
+<p>Pour utiliser uniquement le CPU, ce projet s’appuie sur OpenVINO qu’on a déjà évoqué plus haut. On ne passe donc plus par la librairie Diffusers de Hugging Face, mais par optimum, qui a une API très proche. A noter que FastSD CPU propose surtout un outil en client web pour générer ces images, mais je préfère l’approche code pour plus de flexibilité.</p>
+<div id="173ee394" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> optimum.intel <span class="im">import</span> OVStableDiffusionXLPipeline</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>pipe_t2 <span class="op">=</span> OVStableDiffusionXLPipeline.from_pretrained(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"rupeshs/SDXL-Lightning-2steps-openvino-int8"</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">compile</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>pipe_t2.<span class="bu">compile</span>()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="923c7ab5" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(N_IMAGES):</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> pipe_t2(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        prompt<span class="op">=</span>STYLE_ANCHOR_SHORT <span class="op">+</span> SCENE,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        width<span class="op">=</span>WIDTH,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span>HEIGHT,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        num_inference_steps<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        guidance_scale<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    ) <span class="co"># Note : pas de seed ici. Non supporté par OpenVINO</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    img <span class="op">=</span> result.images[<span class="dv">0</span>]</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    img.save(<span class="ss">f"outputs/sdxl_lightning_</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">.png"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="8b3f22ad" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">del</span> pipe_t2</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>gc.collect()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><a href="outputs/sdxl_lightning_0.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="outputs/sdxl_lightning_0.png" class="img-fluid"></a></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><a href="outputs/sdxl_lightning_1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6"><img src="outputs/sdxl_lightning_1.png" class="img-fluid"></a></p>
+</div>
+</div>
+</div>
+<p>On voit qu’on a passé un cap au niveau de la qualité du rendu : plus de loupé dans le rendu, plus fin dans les détails, etc. Si je trouve le ton un peu trop “adulte” pour l’aspect comic strips que je recherche, cela pourrait être facilement amélioré à travers un fine tuning du prompt.</p>
+<p>Je pourrais partir sur ce modèle, mais en regardant le repo de FastSD CPU, j’ai vu qu’ils ont récemment porté le modèle Sana Sprint de Nvidia qui est encore plus récent (2025).</p>
+</section>
+<section id="sana-sprint-0.6b" class="level3">
+<h3 class="anchored" data-anchor-id="sana-sprint-0.6b">SANA Sprint 0.6B</h3>
+<p>Sana Sprint est la version distillée de <a href="https://nvlabs.github.io/Sana/">Sana</a>, un modèle de génération d’image developpé par Nvidia Labs. Derrière l’utilisation d’un nouveau type d’encodage, la promesse de ce modèle est d’être plus efficace (comprendre : moins gourmand) dans l’inférence d’images. Le modèle étant plus récent, il s’appuie enfin sur T5 pour l’encodage du prompt ce qui permet d’accéder à une fenêtre de 512 token, vs les 77 de CLIP.</p>
+<p>Malgré la petite taille du modèle distillé (seulement 0.6B !), le modèle demande quand même <a href="https://nvlabs.github.io/Sana/docs/installation/">9Go</a> de VRAM. Je passe donc par la version portée par FastSD CPU pour faire quelques tests.</p>
+<div id="cdc06abd" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> optimum.intel <span class="im">import</span> OVPipelineForText2Image</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>pipe_t3 <span class="op">=</span> OVPipelineForText2Image.from_pretrained(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"rupeshs/sana-sprint-0.6b-openvino-int4"</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    ov_config<span class="op">=</span>{<span class="st">"CACHE_DIR"</span>: <span class="st">""</span>},</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="a8b5e4af" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">10</span>):</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> pipe_t3(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        prompt<span class="op">=</span>STYLE_ANCHOR <span class="op">+</span> SCENE,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        width<span class="op">=</span>WIDTH,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        height<span class="op">=</span>HEIGHT,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        num_inference_steps<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>        guidance_scale<span class="op">=</span><span class="fl">4.5</span>,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    img <span class="op">=</span> result.images[<span class="dv">0</span>]</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    img.save(<span class="ss">f"outputs/sana_sprint_</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">.png"</span>)</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="60bc1c33" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">del</span> pipe_t3</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>gc.collect()</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><a href="outputs/sana_sprint_0.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7"><img src="outputs/sana_sprint_0.png" class="img-fluid"></a></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><a href="outputs/sana_sprint_1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8"><img src="outputs/sana_sprint_1.png" class="img-fluid"></a></p>
+</div>
+</div>
+</div>
+<p>Encore une fois, je trouve qu’un palier a été passé au niveau de la qualité d’image. Si on n’est pas encore au niveau d’un Flux, et qu’il y a même encore un peu de déchet (une petite queue de renard en trop…), on est clairement sur quelque chose d’exploitable pour le blog.</p>
+</section>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>Ce petit tour d’horizon des modèles de génération d’image m’a appris pas mal de choses :</p>
+<ul>
+<li>après toutes ces erreurs mémoires (OOM), j’ai maintenant compris que leur conception différente, et notamment le fait de devoir stocker tous les tokens de l’image plus les tenseurs d’attention font que leur besoin en VRAM (ou même en RAM) sont très importants ! Ce n’est pas demain que je vais pouvoir charger un modèle Flux sur mon PC.</li>
+<li>Les modèles distillés permettent de réduire drastiquement le temps de génération d’image. Je vais sûrement consacrer un article dessus car je trouve l’approche très intéressante.</li>
+<li>Comme pour les LLM classiques, les avancées technologiques et autres optimisations ont permis d’avoir des modèles beaucoup plus légers qui arrivent à des niveaux de qualité vraiment intéressants. Je garde un oeil sur les modèles qui vont arriver sur 2026 !</li>
+</ul>
+<p>Une de mes prochaines étapes sera de monter un petit projet de gestion de bibliothèque d’image, afin de me permettre de gérer au mieux la génération et la gestion de ces “assets” graphiques. Et qui sait, permettre de facilement changer et tout regénérer les images du blog si un nouveau modèle prometteur arrive.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copié");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copié");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/blog\.benhafed\.com");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026 Cyril Benhafed</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="https://benhafed.com">
+<p>benhafed.com</p>
+</a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

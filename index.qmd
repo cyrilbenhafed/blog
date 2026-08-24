@@ -1,33 +1,65 @@
 ---
 title: ""
+author: []
 page-layout: full
 title-block-banner: false
 title-block-style: none
 toc: false
+listing:
+  - id: recent-articles
+    contents:
+      - "articles/*/index.qmd"
+      - "projets/*/index.qmd"
+      - "reviews/*.qmd"
+      - "!reviews/index.qmd"
+      - "notes/*.qmd"
+      - "!notes/index.qmd"
+    type: grid
+    grid-columns: 2
+    max-items: 2
+    sort: "date desc"
+    fields: [image, title, date, description]
+    sort-ui: false
+    filter-ui: false
 ---
 
-::: {.hero}
+::: {.home-hero}
 
 ## Carnets d'un ingénieur data {.hero-title}
 
-Ce blog sans prétention rassemble mes différents projets, découvertes et réflexions dans mon métier (et ma passion) autour de la data et du Machine Learning. 
+Ce blog sans prétention rassemble mes différents projets, découvertes et réflexions dans mon métier (et ma passion) autour de la data et du Machine Learning.
 
 :::
 
 ---
 
-::: {.nav-sections}
+## Dernières publications
 
+::: {#recent-articles}
+:::
+
+---
+
+::: {.home-sections}
+
+::: {.home-section-card}
 ### [Articles](articles/index.qmd)
-Retours d'expérience, explorations techniques, outils.
+Retours d'expérience, explorations techniques, MLOps, LLM.
+:::
 
+::: {.home-section-card}
 ### [Projets](projets/index.qmd)
 Projets détaillés — scope, architecture, résultats.
+:::
 
+::: {.home-section-card}
 ### [Reviews](reviews/index.qmd)
-Retours sur des livres, cours et ressources diverses.
+Retours sur des livres, cours et ressources.
+:::
 
+::: {.home-section-card}
 ### [Notes](notes/index.qmd)
-Mes découvertes, observations, réflexions, au jour le jour.
+Fragments du quotidien — découvertes et observations.
+:::
 
 :::

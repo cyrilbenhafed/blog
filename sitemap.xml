@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://blog.benhafed.com/index.html</loc>
-    <lastmod>2026-07-16T20:59:05.361Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.benhafed.com/articles/index.html</loc>
-    <lastmod>2026-07-16T20:59:05.356Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.benhafed.com/STRUCTURE.html</loc>
-    <lastmod>2026-07-16T20:59:05.342Z</lastmod>
-  </url>
-  <url>
     <loc>https://blog.benhafed.com/notes/index.html</loc>
-    <lastmod>2026-07-16T20:59:05.362Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.benhafed.com/reviews/index.html</loc>
-    <lastmod>2026-07-16T20:59:05.362Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.benhafed.com/notes/2026-05-06_scd_type2.html</loc>
-    <lastmod>2026-07-16T20:59:05.361Z</lastmod>
-  </url>
-  <url>
-    <loc>https://blog.benhafed.com/projets/index.html</loc>
-    <lastmod>2026-07-16T20:59:05.362Z</lastmod>
+    <lastmod>2026-08-25T11:37:14.876Z</lastmod>
   </url>
   <url>
     <loc>https://blog.benhafed.com/articles/blog-visual_generation/index.html</loc>
-    <lastmod>2026-07-16T20:59:05.344Z</lastmod>
+    <lastmod>2026-08-25T11:37:14.858Z</lastmod>
   </url>
   <url>
     <loc>https://blog.benhafed.com/articles/predict-next-word/index.html</loc>
-    <lastmod>2026-07-16T20:59:05.360Z</lastmod>
+    <lastmod>2026-08-25T11:37:14.874Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.benhafed.com/index.html</loc>
+    <lastmod>2026-08-25T11:37:14.876Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.benhafed.com/projets/index.html</loc>
+    <lastmod>2026-08-25T11:37:14.876Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.benhafed.com/reviews/index.html</loc>
+    <lastmod>2026-08-25T11:37:14.877Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.benhafed.com/STRUCTURE.html</loc>
+    <lastmod>2026-08-25T11:37:14.857Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.benhafed.com/articles/index.html</loc>
+    <lastmod>2026-08-25T11:37:14.871Z</lastmod>
+  </url>
+  <url>
+    <loc>https://blog.benhafed.com/notes/2026-05-06_scd_type2.html</loc>
+    <lastmod>2026-08-25T11:37:14.876Z</lastmod>
   </url>
 </urlset>

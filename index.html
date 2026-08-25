@@ -2,21 +2,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.38">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Cyril Benhafed">
 
 <title>Cyril Benhafed</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
 */
-code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -34,17 +36,19 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./assets/favicon.ico" rel="icon">
+<link href="./assets/favicon-vitrine.svg" rel="icon" type="image/svg+xml">
+<script src="site_libs/quarto-listing/list.min.js"></script>
+<script src="site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-de63f62b328812d8e578a4d74e282472.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bb62276ab45c84d9efd712f51ff97b5a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-077dc7dac8c2dbd012b9247827b7102d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-51b1b08f22f805fa6212500ec051d482.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -72,12 +76,76 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Recherche"
   }
 }</script>
-<style>html{ scroll-behavior: smooth; }</style>
+<script>
 
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-recent-articles .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-image','listing-title','listing-date','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      
+      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-recent-articles'] = new List('listing-recent-articles', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
+<style>html{ scroll-behavior: smooth; }</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&amp;family=DM+Serif+Display:ital@0;1&amp;display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <meta property="og:title" content="– Cyril Benhafed">
 <meta property="og:description" content="ML Engineer — Articles, projets et notes sur la data en production.">
+<meta property="og:image" content="https://blog.benhafed.com/articles/predict-next-word/cover.png">
 <meta property="og:site_name" content="Cyril Benhafed">
+<meta property="og:image:height" content="576">
+<meta property="og:image:width" content="1024">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -87,7 +155,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="https://benhafed.com">
     <span class="navbar-title">Cyril Benhafed</span>
     </a>
   </div>
@@ -97,6 +165,10 @@ ul.task-list li input[type="checkbox"] {
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
   <li class="nav-item">
     <a class="nav-link" href="./articles/index.html"> 
 <span class="menu-text">Articles</span></a>
@@ -112,28 +184,6 @@ ul.task-list li input[type="checkbox"] {
   <li class="nav-item">
     <a class="nav-link" href="./notes/index.html"> 
 <span class="menu-text">Notes</span></a>
-  </li>  
-</ul>
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://benhafed.com" target="_blank"> <i class="bi bi-house" role="img" aria-label="Retour au site principal">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="./articles/index.xml"> <i class="bi bi-rss" role="img" aria-label="Flux RSS">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://www.linkedin.com/in/cyril-benhafed/" target="_blank"> <i class="bi bi-linkedin" role="img" aria-label="LinkedIn">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/cyrilbenhafed" target="_blank"> <i class="bi bi-github" role="img" aria-label="GitHub">
-</i> 
-<span class="menu-text"></span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -152,36 +202,85 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header">
 
-<p class="author">Cyril Benhafed</p>
 
 </header>
 
 
-<section id="carnets-dun-ingénieur-data" class="level2 hero-title hero">
+<section id="carnets-dun-ingénieur-data" class="level2 hero-title home-hero">
 <h2 class="hero-title anchored" data-anchor-id="carnets-dun-ingénieur-data">Carnets d’un ingénieur data</h2>
 <p>Ce blog sans prétention rassemble mes différents projets, découvertes et réflexions dans mon métier (et ma passion) autour de la data et du Machine Learning.</p>
 </section>
 <hr>
-<div class="nav-sections">
-<section id="articles" class="level3">
+<section id="dernières-publications" class="level2">
+<h2 class="anchored" data-anchor-id="dernières-publications">Dernières publications</h2>
+<div id="listing-recent-articles" class="quarto-listing quarto-listing-container-grid">
+<div class="list grid quarto-listing-cols-2">
+<div class="g-col-1" data-index="0" data-categories="ZCVDMyVBOWNvdXZlcnRl" data-listing-date-sort="1778025600000" data-listing-file-modified-sort="1787657834876" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="332">
+<a href="./notes/2026-05-06_scd_type2.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<div class="listing-item-img-placeholder card-img-top" style="height: 150px;">&nbsp;</div>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Ma découverte inopinée du SCD Type 2
+</h5>
+<div class="card-text listing-description delink">
+Je travaillais avec une collègue sur la mise en place d’une table pour assurer le suivi d’un status de segmentation sur les comptes clients de notre entreprise, et nous…
+</div>
+<div class="card-attribution card-text-small end">
+<div class="listing-date">
+6 mai 2026
+</div>
+</div>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="1" data-categories="Z2VuYWk=" data-listing-date-sort="1776124800000" data-listing-file-modified-sort="1787657834874" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="21" data-listing-word-count-sort="4046">
+<a href="./articles/predict-next-word/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top">
+<img loading="lazy" src="./articles/predict-next-word/cover.png" class="thumbnail-image card-img" style="height: 150px;">
+</p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Les LLM expliqués à mon petit frère
+</h5>
+<div class="card-text listing-description delink">
+<p>Comment la prédiction du prochain mot est à la base des modèles de Large Language Model</p>
+</div>
+<div class="card-attribution card-text-small end">
+<div class="listing-date">
+14 avr. 2026
+</div>
+</div>
+</div>
+</div></a>
+</div>
+</div>
+<div class="listing-no-matching d-none">Aucun article correspondant</div>
+</div>
+<hr>
+<div class="home-sections">
+<section id="articles" class="level3 home-section-card">
 <h3 class="anchored" data-anchor-id="articles"><a href="./articles/index.html">Articles</a></h3>
-<p>Retours d’expérience, explorations techniques, outils.</p>
+<p>Retours d’expérience, explorations techniques, MLOps, LLM.</p>
 </section>
-<section id="projets" class="level3">
+<section id="projets" class="level3 home-section-card">
 <h3 class="anchored" data-anchor-id="projets"><a href="./projets/index.html">Projets</a></h3>
 <p>Projets détaillés — scope, architecture, résultats.</p>
 </section>
-<section id="reviews" class="level3">
+<section id="reviews" class="level3 home-section-card">
 <h3 class="anchored" data-anchor-id="reviews"><a href="./reviews/index.html">Reviews</a></h3>
-<p>Retours sur des livres, cours et ressources diverses.</p>
+<p>Retours sur des livres, cours et ressources.</p>
 </section>
-<section id="notes" class="level3">
+<section id="notes" class="level3 home-section-card">
 <h3 class="anchored" data-anchor-id="notes"><a href="./notes/index.html">Notes</a></h3>
-<p>Mes découvertes, observations, réflexions, au jour le jour.</p>
+<p>Fragments du quotidien — découvertes et observations.</p>
 </section>
 </div>
 
 
+
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

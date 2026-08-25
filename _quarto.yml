@@ -6,10 +6,13 @@ website:
   title: "Cyril Benhafed"
   description: "ML Engineer — Articles, projets et notes sur la data en production."
   site-url: https://blog.benhafed.com
-  favicon: assets/favicon.ico
+  favicon: assets/favicon-vitrine.svg
 
   navbar:
+    logo-href: https://benhafed.com
     left:
+      - text: "Blog"
+        href: index.qmd
       - text: "Articles"
         href: articles/index.qmd
       - text: "Projets"
@@ -18,22 +21,6 @@ website:
         href: reviews/index.qmd
       - text: "Notes"
         href: notes/index.qmd
-    right:
-      - icon: house
-        href: https://benhafed.com
-        aria-label: "Retour au site principal"
-        target: _blank
-      - icon: rss
-        href: articles/index.xml
-        aria-label: "Flux RSS"
-      - icon: linkedin
-        href: https://www.linkedin.com/in/cyril-benhafed/
-        aria-label: "LinkedIn"
-        target: _blank
-      - icon: github
-        href: https://github.com/cyrilbenhafed
-        aria-label: "GitHub"
-        target: _blank
 
   page-footer:
     left: "© 2026 Cyril Benhafed"
@@ -48,6 +35,11 @@ format:
     theme:
       - flatly
       - custom.scss
+    include-in-header:
+      - text: |
+          <link rel="preconnect" href="https://fonts.googleapis.com">
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+          <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
     highlight-style: github
     code-block-bg: true
     code-copy: true
